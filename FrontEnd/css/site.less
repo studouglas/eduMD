@@ -34,7 +34,7 @@ ol, ul {
     LESS
 ***********************************************/
 .default-font {
-    font-family: 'Source Serif Pro', "Helvetica", "Arial", sans-serif;
+    font-family: "Helvetica", "Arial", sans-serif;
     font-size: 18px;
     font-weight: 300;
     line-height: 1.7em;
@@ -76,7 +76,7 @@ body {
     background-color: #f4f4f4;
 }
 .main-content-container {
-    background-color: #fafafa;
+    background-color: #f4f4f4;
 }
 .content {
     margin: 0 auto;
@@ -127,14 +127,14 @@ body {
 .title-heading {
     color: @light-text;
     text-transform: uppercase;
-    font-family: "Yantramanav", "Source Serfi Pro", "Helvetica", "Arial", sans-serif;
+    font-family: "Helvetica", "Arial", sans-serif;
     font-size: 100px;
     font-weight: 300;
     line-height: 60px;
 }
 .title-subheading {
     color: @light-text;
-    font-family: "Yantramanav", "Source Serfi Pro", "Helvetica", "Arial", sans-serif;
+    font-family: "Helvetica", "Arial", sans-serif;
     font-size: 50px;
     font-style: italic;
     font-weight: 100;
@@ -329,18 +329,18 @@ emph {
     Button (ghost)
 ***********************************************/
 .ghost-button {
-    padding: 6px 16px 5px 16px;
+    padding: 2px 16px 1px 16px;
     margin: 25px auto;
     width: auto;
     display: inline-block;
     text-align: center;
-    font-size: 26px;
+    font-size: 20px;
     font-weight: 500;
-    font-family: "Yantramanav";
+    font-family: "Helvetica", "Arial", sans-serif;
     line-height: 1.5em;
     color: @medium-text;
     border-radius: 3px;
-    border: 3px solid @medium-text;
+    border: 2px solid @medium-text;
     transition: color 0.3s ease-in-out, 
         border-color 0.3s ease-in-out, 
         background-color 0.3s ease-in-out;
@@ -680,4 +680,42 @@ body {
     .content {
         padding: 0 100px;
     }
+}
+
+.center-container {
+    margin: 0 auto;
+    display: block;
+    text-align: center;
+}
+
+.login-container {
+    padding: 20px;
+    width: 300px;
+    background-color: #fff;
+    margin-top: 200px;
+    border-radius: 3px;
+}
+
+.text-input {
+    font-size: 18px;
+    width: 100%;
+    padding: 3px;
+}
+
+.input-label {
+    text-align: left;
+    font-size: 22px;
+}
+
+.v-center-container {
+    position: relative;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+#patient-name-label {
+    text-align: left;
+    color: #999;
+    font-size: 20px;
+    margin-top: 20px;
 }
