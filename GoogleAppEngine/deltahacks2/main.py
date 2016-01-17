@@ -154,9 +154,8 @@ class LogoutHandler(BaseHandler):
 class UserHandler(BaseHandler):
 	@user_required
 	def get(self):
-		params = {		
-		}
-		self.render_template('user.html', params)
+		params = {}
+		self.render_template('admin/adminpatient.html', params)
 
 class EditHandler(BaseHandler):
 	@user_required
@@ -164,6 +163,12 @@ class EditHandler(BaseHandler):
 		params = {
 		}
 		self.render_template('edit.html', params)
+
+class EditModulesHandler(BaseHandler):
+	@user_required
+	def get(self):
+		params = {}
+		self.render_template('admin/editmodules.html', params)
 
 class GetConditionHandler(BaseHandler):
 	def get(self, condition_id):
@@ -336,6 +341,7 @@ app = webapp2.WSGIApplication([
     webapp2.Route('/signup', SignUpHandler),
     
     webapp2.Route('/user', UserHandler, name='user'),
+    webapp2.Route('/edit/modules', EditModulesHandler),
     webapp2.Route('/user/edit', EditHandler),
     
     webapp2.Route('/user/get/patient/<patient_id:\d+>', GetPatientHandler),
