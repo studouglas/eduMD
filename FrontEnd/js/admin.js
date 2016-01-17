@@ -1,6 +1,6 @@
-var currentPatientId = "22";
+var currentPatientId;
 var currentPatient;
-var allModules = []; // array of below objects, parent is 
+var allModules = [];     // array of below objects, parent is 
 var patientModules = []; // array of below objects
 var previewedModuleId;
 
@@ -39,6 +39,7 @@ $(document).ready(function () {
     });
 });
 
+// DONE
 function showModuleOverview(moduleId) {
     $("#add-module-to-patient-btn").show();
     console.log("showOverview(" + moduleId + ")");
@@ -51,6 +52,7 @@ function showModuleOverview(moduleId) {
     }
 }
 
+// DONE
 function loadModulesFromServer() {
     // get in ajax, on success write to DOM
     $.ajax({
@@ -67,48 +69,48 @@ function loadModulesFromServer() {
     });
 }
 
+// DONE
 function sortAllModules() {
     allModules.sort(function(a,b) {
         return a.title.localeCompare(b.title);
     });
-    for (var k = 0; k < 20; k++) {
-        for (var j = 0; j < allModules.length; j++) {
-            var indexOfLastChild = j + 1;
-            for (var m = indexOfLastChild; m < allModules.length-1; m++) {
-                if (allModules[m].parent_id == allModules[j].id) {
-                    indexOfLastChild++;
-                } else {
-                    break;
-                }
+    
+    for (var j = 0; j < allModules.length; j++) {
+        var indexOfLastChild = j + 1;
+        for (var m = indexOfLastChild; m < allModules.length-1; m++) {
+            if (allModules[m].parent_id == allModules[j].id) {
+                indexOfLastChild = m+1;
+            } else {
+                indexOfLastChild = m;
+                break;
             }
-            for (var i = indexOfLastChild; i < allModules.length; i++) {    
-                if (allModules[i].parent_id == allModules[j].id) {
-                    temp = allModules[i];
-                    allModules[i] = allModules[indexOfLastChild];
-                    allModules[indexOfLastChild] = temp;
-                    indexOfLastChild++;
-                }
+        }
+        for (var i = indexOfLastChild; i < allModules.length; i++) {    
+            if (allModules[i].parent_id == allModules[j].id) {
+                allModules.splice(indexOfLastChild, 0, allModules[i]); // add element at index
+                allModules.splice(i+1, 1); // remove the element
+                indexOfLastChild++;
             }
         }
     }
-    console.log("DONE SORT:");
-    console.log(allModules);
 }
 
+// TODO: implement this
 function loadPatientModulesFromAllModules() {
-//    patientModules = [];
-//    var patientModuleNums = currentPatient.modules;
-//    for (var i = 0; i < patientModuleNums.length; i++) {
-//        for (var j = 0; j < allModules.length; j++) {
-//            if (allModules[j].id == patientModuleNums[i]) {
-//                patientModules.push(JSON.parse(JSON.stringify(allModules[j]))); // creates copy, not ref
-//            }
-//        }
-//    }
-//    
-//    writePatientModulesToHtml();
+    patientModules = [];
+    var patientModuleNums = currentPatient.modules;
+    for (var i = 0; i < patientModuleNums.length; i++) {
+        for (var j = 0; j < allModules.length; j++) {
+            if (allModules[j].id == patientModuleNums[i]) {
+                patientModules.push(JSON.parse(JSON.stringify(allModules[j]))); // creates copy, not ref
+            }
+        }
+    }
+    
+    writePatientModulesToHtml();
 }
 
+// DONE
 function writeModulesToHtml(filter) {
     var modulesToWrite = (filter == null || filter == '') ? allModules : filterModules(filter);
     
@@ -155,6 +157,7 @@ function writeModulesToHtml(filter) {
     prepareList();
 }
 
+// DONE
 function filterModules(filter) {
     filter = filter.toLowerCase();
     var filteredModules = [];
@@ -166,6 +169,7 @@ function filterModules(filter) {
     return filteredModules;
 }
 
+// DONE
 function writePatientModulesToHtml() {
     var moduleListHtml = '';
     for (var i = 0; i < patientModules.length; i++) {
@@ -177,6 +181,7 @@ function writePatientModulesToHtml() {
     $(".module-list-patient")[0].innerHTML = moduleListHtml;
 }
 
+// DONE
 function loginPatient() {
     var patientId = $("#patient-id-input")[0].value;
     if (patientId == '' || isNaN(patientId)) {
@@ -196,6 +201,7 @@ function loginPatient() {
     $(".module-select-container").show();
 }
 
+// DONE
 function getPatientWithId() {
     console.log("getting patient");
     $.ajax({
@@ -226,14 +232,23 @@ function prepareList() {
     }).addClass('collapsed').children('ul').hide();
 }
 
+// DONE
 function switchPatientsClicked() {
     window.location.href = "adminpatient.html";
 }
 
+// TODO: implement this
 function removeModuleForPatient(moduleId) {
     console.log("Remove module: " + moduleId + " for patient: " + currentPatientId);
     
     // call api to remove module
+    $.ajax({
+        url: 'http://deltahacks2.appspot.com/user/delete/patient/' + currentPatientId,
+        type: 'POST',
+        success: function (data) {
+            console.log("Successfulyl deleted preview module ");
+        }
+    });
     
     // delet local copy for performance
     for (var i = 0; i < patientModules.length; i++) {
@@ -245,6 +260,7 @@ function removeModuleForPatient(moduleId) {
     writePatientModulesToHtml();
 }
 
+// DONE
 function closeModalPopup() {
     $('.fullscreen-modal-container').hide();
     $('.new-module-modal').hide();
@@ -257,11 +273,13 @@ function closeModalPopup() {
     $("#content-input")[0].value = '';
 }
 
+// DONE
 function addNewModuleClicked() {
     $('.new-module-modal').show();
     $("patient-name-input").value = currentPatient.patient_name;
 }
 
+// TODO: implement this
 function addModuleFromForm() {
     var moduleObj = new Object();
     obj.data_type = "txt";
@@ -274,10 +292,12 @@ function addModuleFromForm() {
     closeModalPopup();
 }
 
+// DONE
 function addNewPatient() {
     $(".new-patient-modal").show();
 }
 
+// DONE
 function addNewPatientFromForm() {
     var name = $("#new-patient-name-input")[0].value;
     var id = $("#new-patient-id-input")[0].value;
@@ -295,11 +315,12 @@ function addNewPatientFromForm() {
     closeModalPopup();
 }
 
+// TODO: check that retains old modules
 function addPreviewedModuleToPatient() {
     // call api to add module to patient
-    var modules = [];
-    modules[0] = previewedModuleId;
-     $.ajax({
+    var modules = currentPatient.modules == null ? [] : currentPatient.modules;
+    modules.push(previewedModuleId);
+    $.ajax({
         url: 'http://deltahacks2.appspot.com/user/edit/patient/' + currentPatientId,
         type: 'POST',
         data: {'modules': modules,
@@ -321,5 +342,3 @@ function addPreviewedModuleToPatient() {
     
     writePatientModulesToHtml();
 }
-
-
