@@ -1,5 +1,6 @@
 var currentPatientId;
 var currentPatient;
+var allPatients = [];
 var allModules = [];     // array of below objects, parent is 
 var patientModules = []; // array of below objects
 var previewedModuleId;
@@ -17,21 +18,24 @@ var previewedModuleId;
 ============================== */
 
 $(document).ready(function () {
+    loadAllPatientsFromServer();
     loadModulesFromServer();
     
     $("#patient-id-input").bind('input', function () {            
         var inputId = $(this).val();
         
         // get name for id from server
-        var name = 'Test Name (id: ' + inputId + ')';
-        
-        if (inputId != '' && name != '') {
-            $("#patient-name-label")[0].innerHTML = name;
+        var name = 'Patient not Found';
+        var patient = getPatientWithId(inputId);
+        if (patient != null) {
+            name = patient.patient_name;
             $("#login-button").removeClass('disabled-button');
         } else {
-            $("#patient-name-label")[0].innerHTML = 'Patient not Found';
             $("#login-button").addClass('disabled-button');
         }
+        
+        $("#patient-name-label")[0].innerHTML = name;
+        
     });
     
     $(".search-modules").bind('input', function () {            
@@ -50,6 +54,19 @@ function showModuleOverview(moduleId) {
             previewedModuleId = moduleId;
         }
     }
+}
+
+// DONE
+function loadAllPatientsFromServer() {
+    $.ajax({
+        url: 'http://deltahacks2.appspot.com/user/get/patient/all',
+        type: 'GET',
+        success: function (data) {
+            var jsonData = JSON.parse(data);
+            console.log(jsonData);
+            allPatients = jsonData.patients;
+        }
+    });
 }
 
 // DONE
@@ -189,7 +206,7 @@ function loginPatient() {
     }
     
     currentPatientId = patientId;
-    getPatientWithId();
+    currentPatient = getPatientWithId(patientId);
     
     loadPatientModulesFromAllModules();
     
@@ -202,23 +219,28 @@ function loginPatient() {
 }
 
 // DONE
-function getPatientWithId() {
+function getPatientWithId(patientId) {
     console.log("getting patient");
-    $.ajax({
-        url: 'http://deltahacks2.appspot.com/user/get/patient/' + currentPatientId,
-        type: 'GET',
-        success: function (data) {
-            console.log("RECEIVED ANSWER");
-            console.log(data);
-            
-            var jsondata = JSON.parse(data);
-            currentPatient = jsondata;
-            var patientNameElements = $("span#patient-name");
-            for (i = 0; i < patientNameElements.length; i++) {
-                patientNameElements[i].innerHTML = currentPatient.patient_name;
-            }
+    for (var i = 0; i < allPatients.length; i++) {
+        if (allPatients[i].patient_id == patientId) {
+            return allPatients[i];
         }
-    });
+    }
+//    $.ajax({
+//        url: 'http://deltahacks2.appspot.com/user/get/patient/' + currentPatientId,
+//        type: 'GET',
+//        success: function (data) {
+//            console.log("RECEIVED ANSWER");
+//            console.log(data);
+//            
+//            var jsondata = JSON.parse(data);
+//            currentPatient = jsondata;
+//            var patientNameElements = $("span#patient-name");
+//            for (i = 0; i < patientNameElements.length; i++) {
+//                patientNameElements[i].innerHTML = currentPatient.patient_name;
+//            }
+//        }
+//    });
 } 
 
 // http://jasalguero.com/ledld/development/web/expandable-list/
@@ -317,7 +339,6 @@ function addNewPatientFromForm() {
 
 // TODO: check that retains old modules
 function addPreviewedModuleToPatient() {
-    // call api to add module to patient
     var modules = currentPatient.modules == null ? [] : currentPatient.modules;
     modules.push(previewedModuleId);
     $.ajax({
