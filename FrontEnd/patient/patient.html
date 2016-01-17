@@ -1,0 +1,54 @@
+<!doctype html>
+<head>
+    <title>Admin Portal</title>
+    <meta charset="utf-8" name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <link rel="stylesheet/less" type="text/css" href="../css/site.less">
+    <script src="../js/jquery-1.11.3.min.js"></script>
+    <script src="../js/less.js"></script>
+    <script src="../js/patient.js"></script>
+</head>
+
+<body>
+    <div class="main-content-container">
+        
+        <header class="header-background">
+            <img src="../img/eduMD3.png" class="header-logo" alt="Logo"> 
+            <a href="/user" class="nav-title">Patient Portal</a>
+            <ul class="nav-list">
+                <a href="/logout"><li>Logout</li></a>
+            </ul>
+        </header>
+        
+        <div class="module-select-container">
+            <div class="patient-header">
+                <p class="patient-name">Patient #<span id="patient-id">0</span>: <strong><span id="patient-name">Test Name</span></strong></p>
+            </div>
+
+            <div class="module-list-container-patient">
+                <h1 class="module-preview-title">All Modules</h1>
+                <input type="text" placeholder="Filter Modules" class="search-modules"/>
+                <ul class="module-list">
+                </ul>
+            </div>
+
+            <div class="module-preview-container-patient">
+                <h1 class="module-preview-title" id="module-preview-title">Dementia Overview</h1>
+                <div class="module-preview-content" id="module-preview-content">
+                    <p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit.
+                    Morbi commodo, ipsum sed pharetra gravida, orci magna rhoncus
+                    neque, id pulvinar odio lorem non turpis. Nullam sit amet enim. 
+                    Suspendisse id velit vitae ligula volutpat condimentum. Aliquam 
+                    erat volutpat. Sed quis velit. Nulla facilisi. Nulla  libero. Vivamus 
+                    pharetra posuere sapien.
+                    Sed aliquam, nunc eget euismod ullamcorper, lectus nunc ullamcorper 
+                    orci, fermentum bibendum enim nibh eget ipsum. Donec porttitor 
+                    ligula eu dolor. Maecenas vitae nulla consequat libero cursus 
+                    venenatis. Nam magna enim, accumsan eu, blandit sed, blandit a, 
+                    eros.</p>
+                </div>
+            </div>
+            
+            <div style="clear: both;"></div>
+        </div><!-- module-select-container -->
+    </div><!-- /main-content-container -->
+</body>
