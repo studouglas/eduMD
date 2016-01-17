@@ -11,7 +11,7 @@
 <body>
     <div class="main-content-container">
         <header class="header-background">
-            <img src="/img/eduMD3.png" class="header-logo" alt="Logo"> 
+            <img src="../img/eduMD3.png" class="header-logo" alt="Logo"> 
             <a href="index.html" class="nav-title">Admin Portal</a>
             <ul class="nav-list">
 <!--                <a href="editmodules.html"><li>Edit Modules</li></a>-->
@@ -107,28 +107,19 @@
                         </div>
                         <div class="col-6">
                             <p for="patient">Patient (Private Module Only):</p>
-                            <input class="input" type="text" name="patient" id="patient-name-input" />
+                            <p class="patient-name-label-grayed-out"><span id="patient-name"></span></p>
                         </div>
-                        <div style="clear: both;"></div>
+                        <div style="clear: both;"></div><br>
                         
-                        <p for="title">Module Title:</p>
-                        <input class="input" type="text" name="title" id="title-input"/><br>
-                        
-                        <p for="parent_id">Category ID (not required):</p>
-                        <input class="input" type="input" name="parent_id" id="category-input"/><br>
-                        
-                        <p for="content">Content: </p>
-                        <textarea class="textarea-input" name="content" id="content-input"></textarea>
-<!--                        <button type="submit" value="Publish">Add</button>-->
-                        <!--
-                        <p>Category (not required):</p>
-                        <input class="input" id="category-input" type="text" /><br><br>
                         <p>Module Title:</p>
-                        <input class="input" id="title-input" type="text"><br><br>
+                        <input class="input" type="text" name="title" id="title-input"/><br><br>
                         
-                        <p>Module Content:</p>
-                        <textarea class="textarea-input" id="content-input"></textarea>
-                        -->
+                        <p>Category ID (not required):</p>
+                        <input class="input" type="input" name="parent_id" id="category-input"/><br><br>
+                        
+                        <p>Content (common HTML tags are allowed):</p>
+                        <textarea class="textarea-input" name="content" id="content-input"></textarea>
+
                         <div class="button-container-center">
                             <a class="ghost-button" onclick="closeModalPopup()">Cancel</a>
                             <a class="ghost-button highlighted-button" onclick="addModuleFromForm()">Add Module</a>
@@ -144,24 +135,3 @@
     </div><!-- /main-content-container -->
 </body>
 
-<script type="text/javascript" src="../js/tinymce/tinymce.min.js"></script>
-    <script type="text/javascript">
-        tinymce.init({
-            selector: "textarea",
-            width: "650",
-            height: "500",
-            theme: "modern",
-            plugins: [
-                "advlist autolink lists link image charmap print preview hr pagebreak",
-                "searchreplace wordcount visualblocks visualchars code fullscreen",
-                "insertdatetime media nonbreaking save table contextmenu directionality",
-                "emoticons template paste textcolor colorpicker textpattern imagetools"
-            ],
-            toolbar1: "insertfile undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image",
-            toolbar2: "preview media | forecolor backcolor emoticons | code",
-            image_advtab: true,
-            paste_data_images: true,
-            resize: false,
-//            content_css: "css/texteditor.css",
-        });
-</script>

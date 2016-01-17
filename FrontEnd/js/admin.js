@@ -304,16 +304,16 @@ function addNewModuleClicked() {
     $("patient-name-input").value = currentPatient.patient_name;
 }
 
-// TODO: implement this
+// DONE
 function addModuleFromForm() {
     var data_type = "txt";
     var title = $("#title-input")[0].value;
-    var content = $("#content-input")[0].value;
+    var content = "<p>" + $("#content-input")[0].value + "</p>";
     var shared = $("#public-input")[0].checked;
     var parentId = $("#category-input")[0].value;
-    if (parentId != null) {
+    if (parentId != null && parentId != "") {
         var validParentId = false;
-        for (int i = 0; i < allModules.length; i++) {
+        for (var i = 0; i < allModules.length; i++) {
             if (allModules[i].id == parentId) {
                 validParentId = true;
                 break;
