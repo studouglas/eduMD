@@ -14,8 +14,10 @@
             <img src="../img/eduMD3.png" class="header-logo" alt="Logo"> 
             <a href="index.html" class="nav-title">Admin Portal</a>
             <ul class="nav-list">
-<!--                <a href="editmodules.html"><li>Edit Modules</li></a>-->
-<!--                <a href="adminpatient.html"><li class="current-page">Patient</li></a>-->
+            
+            <a href="index.html"><li id="switch-patients-btn" style="display: none;">Switch Patients</li></a>
+            <a><li id="switch-patients-btn" style="display: none;">E-mail Link</li></a>
+            
             </ul>
         </header>
         
@@ -63,7 +65,6 @@
         <div class="module-select-container" style="display: none;"> 
             <div class="patient-header">
                 <p class="patient-name">Patient #<span id="patient-id">0</span>: <strong><span id="patient-name">Test Name</span></strong></p>
-                <button class="switch-patients-btn" onclick="switchPatientsClicked()">Switch Patients</button>
             </div>
 
             <div class="module-list-container">

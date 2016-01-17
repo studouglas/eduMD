@@ -205,6 +205,8 @@ function loginPatient() {
         return;
     }
     
+    $("#switch-patients-btn").show();
+    
     currentPatientId = patientId;
     currentPatient = getPatientWithId(patientId);
     
@@ -240,11 +242,6 @@ function prepareList() {
         }
         return false;
     }).addClass('collapsed').children('ul').hide();
-}
-
-// DONE
-function switchPatientsClicked() {
-    window.location.href = "adminpatient.html";
 }
 
 // DONE
