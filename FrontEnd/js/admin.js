@@ -383,9 +383,8 @@ function addPreviewedModuleToPatient() {
 //Mailto function
 function generateMailto() {
     var subject = 'Dr. Watson has shared health educational materials with';
-    var patient_link = 'place_holder';
-    var body_message = 'Your health care professional has shared educational materials with you on eduMD click the link:' + patient_link;
-    var mailto_link = 'mailto:' + email + '?subject=' + subject + '&body=' + body_message;
+    var patient_link = 'http://www.deltahacks2.appspot.com/patient/' + currentPatientId;
+    var body_message = 'Your health care professional has shared educational materials with you on eduMD. You can find your personalized materials at ' + patient_link + '.';
+    var mailto_link = 'mailto:?subject=' + subject + '&body=' + body_message;
     win = window.open(mailto_link,'emailWindow');
-    if (win && win.open && !win.closed) win.close();
 }

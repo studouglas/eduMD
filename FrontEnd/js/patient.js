@@ -1,6 +1,7 @@
-var currentPatientId = "22";
+var currentPatientId;
 var currentPatient;
-var allModules = []; // array of below objects, parent is 
+var allPatients = [];
+var allModules = [];     // array of below objects, parent is 
 var patientModules = []; // array of below objects
 var previewedModuleId;
 
@@ -17,21 +18,24 @@ var previewedModuleId;
 ============================== */
 
 $(document).ready(function () {
+    loadAllPatientsFromServer();
     loadModulesFromServer();
     
     $("#patient-id-input").bind('input', function () {            
         var inputId = $(this).val();
         
         // get name for id from server
-        var name = 'Test Name (id: ' + inputId + ')';
-        
-        if (inputId != '' && name != '') {
-            $("#patient-name-label")[0].innerHTML = name;
+        var name = 'Patient not Found';
+        var patient = getPatientWithId(inputId);
+        if (patient != null) {
+            name = patient.patient_name;
             $("#login-button").removeClass('disabled-button');
         } else {
-            $("#patient-name-label")[0].innerHTML = 'Patient not Found';
             $("#login-button").addClass('disabled-button');
         }
+        
+        $("#patient-name-label")[0].innerHTML = name;
+        
     });
     
     $(".search-modules").bind('input', function () {            
@@ -39,6 +43,7 @@ $(document).ready(function () {
     });
 });
 
+// DONE
 function showModuleOverview(moduleId) {
     $("#add-module-to-patient-btn").show();
     console.log("showOverview(" + moduleId + ")");
@@ -51,6 +56,20 @@ function showModuleOverview(moduleId) {
     }
 }
 
+// DONE
+function loadAllPatientsFromServer() {
+    $.ajax({
+        url: 'http://deltahacks2.appspot.com/user/get/patient/all',
+        type: 'GET',
+        success: function (data) {
+            var jsonData = JSON.parse(data);
+            console.log(jsonData);
+            allPatients = jsonData.patients;
+        }
+    });
+}
+
+// DONE
 function loadModulesFromServer() {
     // get in ajax, on success write to DOM
     $.ajax({
@@ -67,48 +86,48 @@ function loadModulesFromServer() {
     });
 }
 
+// DONE
 function sortAllModules() {
     allModules.sort(function(a,b) {
         return a.title.localeCompare(b.title);
     });
-    for (var k = 0; k < 20; k++) {
-        for (var j = 0; j < allModules.length; j++) {
-            var indexOfLastChild = j + 1;
-            for (var m = indexOfLastChild; m < allModules.length-1; m++) {
-                if (allModules[m].parent_id == allModules[j].id) {
-                    indexOfLastChild++;
-                } else {
-                    break;
-                }
+    
+    for (var j = 0; j < allModules.length; j++) {
+        var indexOfLastChild = j + 1;
+        for (var m = indexOfLastChild; m < allModules.length-1; m++) {
+            if (allModules[m].parent_id == allModules[j].id) {
+                indexOfLastChild = m+1;
+            } else {
+                indexOfLastChild = m;
+                break;
             }
-            for (var i = indexOfLastChild; i < allModules.length; i++) {    
-                if (allModules[i].parent_id == allModules[j].id) {
-                    temp = allModules[i];
-                    allModules[i] = allModules[indexOfLastChild];
-                    allModules[indexOfLastChild] = temp;
-                    indexOfLastChild++;
-                }
+        }
+        for (var i = indexOfLastChild; i < allModules.length; i++) {    
+            if (allModules[i].parent_id == allModules[j].id) {
+                allModules.splice(indexOfLastChild, 0, allModules[i]); // add element at index
+                allModules.splice(i+1, 1); // remove the element
+                indexOfLastChild++;
             }
         }
     }
-    console.log("DONE SORT:");
-    console.log(allModules);
 }
 
+// DONE
 function loadPatientModulesFromAllModules() {
-//    patientModules = [];
-//    var patientModuleNums = currentPatient.modules;
-//    for (var i = 0; i < patientModuleNums.length; i++) {
-//        for (var j = 0; j < allModules.length; j++) {
-//            if (allModules[j].id == patientModuleNums[i]) {
-//                patientModules.push(JSON.parse(JSON.stringify(allModules[j]))); // creates copy, not ref
-//            }
-//        }
-//    }
-//    
-//    writePatientModulesToHtml();
+    patientModules = [];
+    var patientModuleNums = currentPatient.patient_modules == null ? [] : currentPatient.patient_modules.split(',');
+    for (var i = 0; i < patientModuleNums.length; i++) {
+        for (var j = 0; j < allModules.length; j++) {
+            if (allModules[j].id == patientModuleNums[i]) {
+                patientModules.push(JSON.parse(JSON.stringify(allModules[j]))); // creates copy, not ref
+            }
+        }
+    }
+    
+    writePatientModulesToHtml();
 }
 
+// DONE
 function writeModulesToHtml(filter) {
     var modulesToWrite = (filter == null || filter == '') ? allModules : filterModules(filter);
     
@@ -155,6 +174,7 @@ function writeModulesToHtml(filter) {
     prepareList();
 }
 
+// DONE
 function filterModules(filter) {
     filter = filter.toLowerCase();
     var filteredModules = [];
@@ -166,6 +186,7 @@ function filterModules(filter) {
     return filteredModules;
 }
 
+// DONE
 function writePatientModulesToHtml() {
     var moduleListHtml = '';
     for (var i = 0; i < patientModules.length; i++) {
@@ -177,14 +198,17 @@ function writePatientModulesToHtml() {
     $(".module-list-patient")[0].innerHTML = moduleListHtml;
 }
 
+// DONE
 function loginPatient() {
     var patientId = $("#patient-id-input")[0].value;
     if (patientId == '' || isNaN(patientId)) {
         return;
     }
     
+    $("#switch-patients-btn").show();
+    $("#email-link-btn").show();
     currentPatientId = patientId;
-    getPatientWithId();
+    currentPatient = getPatientWithId(patientId);
     
     loadPatientModulesFromAllModules();
     
@@ -192,27 +216,21 @@ function loginPatient() {
     for (i = 0; i < patientIdElements.length; i++) {
         patientIdElements[i].innerHTML = currentPatientId;
     }
+    var patientNameElements = $("span#patient-name");
+    for (var i = 0; i < patientNameElements.length; i++) {
+        patientNameElements[i].innerHTML = currentPatient.patient_name;
+    }
     $(".login-container").hide();
     $(".module-select-container").show();
 }
 
-function getPatientWithId() {
-    console.log("getting patient");
-    $.ajax({
-        url: 'http://deltahacks2.appspot.com/user/get/patient/' + currentPatientId,
-        type: 'GET',
-        success: function (data) {
-            console.log("RECEIVED ANSWER");
-            console.log(data);
-            
-            var jsondata = JSON.parse(data);
-            currentPatient = jsondata;
-            var patientNameElements = $("span#patient-name");
-            for (i = 0; i < patientNameElements.length; i++) {
-                patientNameElements[i].innerHTML = currentPatient.patient_name;
-            }
+// DONE
+function getPatientWithId(patientId) {
+    for (var i = 0; i < allPatients.length; i++) {
+        if (allPatients[i].patient_id == patientId) {
+            return allPatients[i];
         }
-    });
+    }
 } 
 
 // http://jasalguero.com/ledld/development/web/expandable-list/
@@ -226,14 +244,34 @@ function prepareList() {
     }).addClass('collapsed').children('ul').hide();
 }
 
-function switchPatientsClicked() {
-    window.location.href = "adminpatient.html";
-}
-
+// DONE
 function removeModuleForPatient(moduleId) {
-    console.log("Remove module: " + moduleId + " for patient: " + currentPatientId);
+    console.log("Remove module: " + moduleId + ")");
+    console.log(currentPatient.patient_modules);
     
-    // call api to remove module
+    if (currentPatient.patient_modules != null && currentPatient.patient_models != "") {
+        var patientModulesLoc = currentPatient.patient_modules.split(',');
+        for (var i = 0; i < patientModulesLoc.length; i++) {
+            patientModulesLoc.splice(i,1);
+            currentPatient.patient_modules = patientModulesLoc.join();
+            break;
+        }
+    } else {
+        return;
+    }
+    console.log(currentPatient.patient_modules);
+    
+    $.ajax({
+        url: 'http://deltahacks2.appspot.com/user/edit/patient/' + currentPatientId,
+        type: 'POST',
+        data: {'modules': currentPatient.patient_modules,
+               'patient_id':currentPatientId,
+               'patient_name':currentPatient.patient_name
+        },
+        success: function (data) {
+            console.log("Successfulyl removed preview module ");
+        }
+    });
     
     // delet local copy for performance
     for (var i = 0; i < patientModules.length; i++) {
@@ -245,6 +283,7 @@ function removeModuleForPatient(moduleId) {
     writePatientModulesToHtml();
 }
 
+// DONE
 function closeModalPopup() {
     $('.fullscreen-modal-container').hide();
     $('.new-module-modal').hide();
@@ -252,16 +291,17 @@ function closeModalPopup() {
     $("#new-patient-name-input")[0].value = '';
     $("#public-input")[0].checked = true;
     $("#patient-name-input")[0].value = '';
-    $("#category-input")[0].value = '';
-    $("#title-input")[0].value = '';
-    $("#content-input")[0].value = '';
+//    $("#title-input")[0].value = '';
+//    $("#content-input")[0].value = '';
 }
 
+// DONE
 function addNewModuleClicked() {
     $('.new-module-modal').show();
     $("patient-name-input").value = currentPatient.patient_name;
 }
 
+// TODO: implement this
 function addModuleFromForm() {
     var moduleObj = new Object();
     obj.data_type = "txt";
@@ -274,10 +314,12 @@ function addModuleFromForm() {
     closeModalPopup();
 }
 
+// DONE
 function addNewPatient() {
     $(".new-patient-modal").show();
 }
 
+// DONE
 function addNewPatientFromForm() {
     var name = $("#new-patient-name-input")[0].value;
     var id = $("#new-patient-id-input")[0].value;
@@ -295,14 +337,29 @@ function addNewPatientFromForm() {
     closeModalPopup();
 }
 
+// TODO: check that retains old modules
 function addPreviewedModuleToPatient() {
-    // call api to add module to patient
-    var modules = [];
-    modules[0] = previewedModuleId;
-     $.ajax({
+    if (currentPatient.patient_models != null) {
+        var patientModulesLoc = currentPatient.patient_models.split(',');
+        for (var i = 0; i < patientModulesLoc.length; i++) {
+            if (patientModulesLoc[i] == previewedModuleId) {
+                return;
+            }
+        }
+    }
+    
+    if (currentPatient.patient_modules != null && currentPatient.patient_modules != '') {
+        currentPatient.patient_modules += "," + previewedModuleId;
+    } else {
+        currentPatient.patient_modules = previewedModuleId;
+    }
+    
+    console.log("Adding Previews: <" + currentPatient.patient_modules + ">");
+    
+    $.ajax({
         url: 'http://deltahacks2.appspot.com/user/edit/patient/' + currentPatientId,
         type: 'POST',
-        data: {'modules': modules,
+        data: {'modules': currentPatient.patient_modules,
                'patient_id':currentPatientId,
                'patient_name':currentPatient.patient_name
         },
@@ -322,4 +379,12 @@ function addPreviewedModuleToPatient() {
     writePatientModulesToHtml();
 }
 
-
+//TODO
+//Mailto function
+function generateMailto() {
+    var subject = 'Dr. Watson has shared health educational materials with';
+    var patient_link = 'http://www.deltahacks2.appspot.com/patient/' + currentPatientId;
+    var body_message = 'Your health care professional has shared educational materials with you on eduMD. You can find your personalized materials at ' + patient_link + '.';
+    var mailto_link = 'mailto:?subject=' + subject + '&body=' + body_message;
+    win = window.open(mailto_link,'emailWindow');
+}
