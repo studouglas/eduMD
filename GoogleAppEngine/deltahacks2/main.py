@@ -275,8 +275,7 @@ class AddPatientHandler(BaseHandler):
 		new_patient = Patient(parent=patient_key(DEFAULT_KEY))
 		new_patient.patient_id = int(self.request.get('patient_id'))
 		new_patient.patient_name = self.request.get('patient_name')
-		lst = []
-		new_patient.modules = lst
+		new_patient.modules = ''
 		new_patient.doctor_id = int(self.user_info['user_id'])
 		new_patient.put()
 		params = {}
@@ -290,10 +289,7 @@ class EditPatientHandler(BaseHandler):
 		patient = patients[0]
 		patient.patient_id = int(self.request.get('patient_id'))
 		patient.patient_name = self.request.get('patient_name')
-		lst = []
-		for e in self.request.get_all('modules'):
-			lst.append(e)
-		patient.modules = lst
+		patient.modules = self.request.get('modules')
 		patient.put()
 		params = {}
 		self.response.out.write(json.dumps(params))

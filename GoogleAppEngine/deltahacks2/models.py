@@ -28,7 +28,7 @@ def patient_key(key=DEFAULT_KEY):
 class Patient(ndb.Model):
 	patient_id = ndb.IntegerProperty(required=True)
 	patient_name = ndb.StringProperty(required=True)
-	modules = ndb.StringProperty(repeated=True)
+	modules = ndb.StringProperty()
 	doctor_id = ndb.IntegerProperty(required=True)
 
 def condition_key(key=DEFAULT_KEY):

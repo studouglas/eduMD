@@ -37,6 +37,9 @@
 
                     <div class="fullscreen-modal-content">
                         <form>
+                            <p>Patient ID:</p>
+                            <input class="input" type="text" id="new-patient-id-input" />
+                            
                             <p>Patient Name:</p>
                             <input class="input" type="text" id="new-patient-name-input" />
                         </form>
@@ -72,21 +75,11 @@
             </div>
 
             <div class="module-preview-container">
-                <h1 class="module-preview-title" id="module-preview-title">Dementia Overview</h1>
+                <h1 class="module-preview-title" id="module-preview-title">Select a Module On The Left</h1>
                 <div class="module-preview-content" id="module-preview-content">
-                    <p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit.
-                    Morbi commodo, ipsum sed pharetra gravida, orci magna rhoncus
-                    neque, id pulvinar odio lorem non turpis. Nullam sit amet enim. 
-                    Suspendisse id velit vitae ligula volutpat condimentum. Aliquam 
-                    erat volutpat. Sed quis velit. Nulla facilisi. Nulla  libero. Vivamus 
-                    pharetra posuere sapien.
-                    Sed aliquam, nunc eget euismod ullamcorper, lectus nunc ullamcorper 
-                    orci, fermentum bibendum enim nibh eget ipsum. Donec porttitor 
-                    ligula eu dolor. Maecenas vitae nulla consequat libero cursus 
-                    venenatis. Nam magna enim, accumsan eu, blandit sed, blandit a, 
-                    eros.</p>
+                    <p>Select a module to see its contents, and add it to the patient's profile if it's relevant.</p>
                 </div>
-                <div class="button-container-center">
+                <div class="button-container-center" id="add-module-to-patient-btn" style="display: none;">
                     <a class="ghost-button highlighted-button" onclick="addPreviewedModuleToPatient()">Add to Patient's Modules</a>
                 </div>
             </div>
