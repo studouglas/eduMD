@@ -2,6 +2,7 @@ var currentPatientId = "22";
 var currentPatientName = "John Sno";
 var allModules; // array of below objects, parent is 
 var patientModules; // array of below objects
+var previewedModuleId;
 
 /* JSON for Modules ==============
 {
@@ -18,7 +19,7 @@ var patientModules; // array of below objects
 $(document).ready(function () {
     allModules = getAllModules();
     writeModulesToHtml();
-    prepareList();
+//    prepareList();
     
     $("#patient-id-input").bind('input', function () {            
         var inputId = $(this).val();
@@ -41,13 +42,16 @@ $(document).ready(function () {
     
     $(".module-list li").click(function () {
         console.log(this);
-        showModuleOverview(this.id);
+        if (!$(this).hasClass("module-parent")) {
+            showModuleOverview(this.id);   
+        }
     });
 });
 
 function showModuleOverview(moduleId) {
-    $(".module-preview-title")[0].innerHTML = "MODULE: " + moduleId;
-    $(".module-preview-content")[0].innerHTML = "<p>CONTENT HERE</p>";
+    $("#module-preview-title")[0].innerHTML = "MODULE: " + moduleId;
+    $("#module-preview-content")[0].innerHTML = "<p>CONTENT HERE</p>";
+    previewedModuleId = moduleId;
 }
 
 function getAllModules() {
@@ -70,7 +74,7 @@ function writeModulesToHtml(filter) {
     moduleListHtml += '<li id="all_104"><p class="module-title">Multiple Sclerosis</p></li>\n'
     moduleListHtml += '<li id="all_105"><p class="module-title">Dementia</p></li>\n'
     moduleListHtml += '<li id="all_106"><p class="module-title">Alzheimer\'s</p></li>\n'
-    moduleListHtml += '<li id="all_104">\n'
+    moduleListHtml += '<li id="all_104" class="module-parent">\n'
     moduleListHtml += '<p class="module-title module-parent-title">Respitory</p>\n'
     moduleListHtml += '<ul class="module-children-list">\n'
     moduleListHtml += '<li id="all_107"><p class="module-title">Asthma</p></li>\n'
@@ -81,6 +85,8 @@ function writeModulesToHtml(filter) {
     moduleListHtml += '</li>\n'
     moduleListHtml += '<li id="all_111"><p class="module-title">Stroke</p></li>\n'
     $(".module-list")[0].innerHTML = moduleListHtml;
+    
+    prepareList();
 }
 
 function filterModules(filter) {
@@ -90,6 +96,7 @@ function filterModules(filter) {
             filteredModules.push(allModules[i]);   
         }
     }
+    console.log("filtered mods: ");
     console.log(filteredModules);
     return filteredModules;
 }
@@ -111,7 +118,7 @@ function loginPatient() {
     }
     
     currentPatientId = patientId;
-    currentPatientName = getPatientNameForId(patientId);
+    currentPatientName = getPatientNameForId();
     
     patientModules = getPatientModules();
     writePatientModulesToHtml();
@@ -128,10 +135,10 @@ function loginPatient() {
     $(".module-select-container").show();
 }
 
-function getPatientNameForId(patientId) {
-    var name = 'John Snow';
+function getPatientNameForId() {
+    var name = 'Peter Snow';
     $.ajax({
-        url: 'http://deltahacks2.appspot.com/user/get/patient/' + patientId,
+        url: 'http://deltahacks2.appspot.com/user/get/patient/' + currentPatientId,
         type: 'GET',
         success: function (data) {
             console.log("RECEIVED ANSWER");
@@ -151,16 +158,6 @@ function prepareList() {
         }
         return false;
     }).addClass('collapsed').children('ul').hide();
-
-    $('#expandList').unbind('click').click( function() {
-        $('.collapsed').addClass('expanded');
-        $('.collapsed').children().show('medium');
-    });
-    
-    $('#collapseList').unbind('click').click( function() {
-        $('.collapsed').removeClass('expanded');
-        $('.collapsed').children().hide('medium');
-    });
 }
 
 function switchPatientsClicked() {
@@ -206,6 +203,8 @@ function addModuleFromForm() {
     console.log("TITLE:   " + title);
     console.log("CONTENT: " + content);
     
+    allModules = getAllModules();
+    writeModulesToHtml();
     closeModalPopup();
 }
 
@@ -217,4 +216,13 @@ function addNewPatientFromForm() {
     var name = $("#new-patient-name-input")[0].value;
     console.log("Add Patient: <" + name + ">");
     closeModalPopup();
+}
+
+function addPreviewedModuleToPatient() {
+    // call api to add module to patient
+    
+    console.log("Adding Module " + previewedModuleId + " to patient");
+    
+    patientModules = getPatientModules();
+    writePatientModulesToHtml();
 }

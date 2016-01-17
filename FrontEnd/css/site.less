@@ -58,10 +58,10 @@ ol, ul {
 
 @dark-blue: #20212D;
 @dark-blue-hover: #181922;
-@bright-red: #e36767;
+@bright-red: #9bead5;
 @bright-red-hover: #c95f4d;
 
-@link-red: #d16d59;
+@link-red: #6dc6ae;
 @link-red-hover: #eeeeee;
 @link-blue: #343dac;
 @link-blue-hover: #222976;
@@ -121,9 +121,6 @@ strong {
 }
 emph {
     font-style: italic;
-}
-::selection {
-    background: @bright-red;
 }
 .content-paragraph {
     margin-bottom: 1.5em;
@@ -272,7 +269,7 @@ emph {
     border-color: #555555;
 }
 .ghost-button.highlighted-button {
-    background-color: #8ff0c4;
+    background-color: #9bead5;
     border-color: #388165;
     color: #388165;
 }
@@ -460,7 +457,7 @@ emph {
 .module-list-container {
     width: 25%;
     float: left;
-    background-color: aquamarine;
+//    background-color: aquamarine;
     padding: 20px;
 }
 
@@ -494,20 +491,19 @@ module-list li {
     padding: 5px;
     margin: 10px 0;
     margin-right: 15px;
-    background-color: white;
+    background-color: #e0e0e0;
     
 }
 .module-title:hover {
-    background-color: #eee;
+    background-color: #cecece;
     cursor: pointer;
 }
 .module-list {
-    background-color: aqua;
     overflow-x: scroll;
 }
 
 .module-preview-container {
-    background-color: bisque;
+    background-color: #fafafa;
     width: 50%;
     float: left;
     padding: 20px;
@@ -516,7 +512,7 @@ module-list li {
 .patient-modules-container {
     width: 25%;
     float: right;
-    background-color: brown;
+//    background-color: #e2e2e2;
     padding: 20px;
 }
 
@@ -531,7 +527,7 @@ module-list li {
 
 .module-title-btn {
     margin: 0;
-    background-color: white;
+    background-color: #e0e0e0;
     width: 40px;
     padding: 5px;
     text-align: center;
@@ -540,14 +536,12 @@ module-list li {
 }
 .module-title-btn:hover {
     cursor: pointer;
-    background-color: #eee;
+    background-color: #cecece;
 }
-
-
 
 .patient-header {
     height: 40px;
-    background-color: coral;
+    background-color: @link-red;
     width: 100%;
 }
 
@@ -578,7 +572,7 @@ module-list li {
     display: inline-block;
 }
 .module-title-with-btn:hover {
-    background-color: white;
+    background-color: #e0e0e0;
     cursor: default;
 }
 
@@ -600,4 +594,9 @@ module-list li {
 
 #category-suggestion-dropdown {
     width: 100%;
+}
+
+.module-parent-title:hover {
+    background-color: #e0e0e0;
+    cursor: default;
 }
