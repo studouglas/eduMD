@@ -17,9 +17,7 @@ var previewedModuleId;
 ============================== */
 
 $(document).ready(function () {
-    allModules = getAllModules();
-    writeModulesToHtml();
-//    prepareList();
+    loadModulesFromServer();
     
     $("#patient-id-input").bind('input', function () {            
         var inputId = $(this).val();
@@ -41,7 +39,6 @@ $(document).ready(function () {
     });
     
     $(".module-list li").click(function () {
-        console.log(this);
         if (!$(this).hasClass("module-parent")) {
             showModuleOverview(this.id);   
         }
@@ -54,12 +51,16 @@ function showModuleOverview(moduleId) {
     previewedModuleId = moduleId;
 }
 
-function getAllModules() {
-    return [];
+function loadModulesFromServer() {
+    // get in ajax, on success write to DOM
+    
+    writeModulesToHtml();
 }
 
-function getPatientModules() {
-    return [];
+function loadPatientModulesFromServer() {
+    // get in ajax, on success write to DOM
+    
+    writePatientModulesToHtml();
 }
 
 function writeModulesToHtml(filter) {
@@ -118,15 +119,10 @@ function loginPatient() {
     }
     
     currentPatientId = patientId;
-    currentPatientName = getPatientNameForId();
+    setPatientNameForId();
     
-    patientModules = getPatientModules();
-    writePatientModulesToHtml();
+    loadPatientModulesFromServer();
     
-    var patientNameElements = $("span#patient-name");
-    for (i = 0; i < patientNameElements.length; i++) {
-        patientNameElements[i].innerHTML = currentPatientName;
-    }
     var patientIdElements = $("span#patient-id");
     for (i = 0; i < patientIdElements.length; i++) {
         patientIdElements[i].innerHTML = currentPatientId;
@@ -135,18 +131,23 @@ function loginPatient() {
     $(".module-select-container").show();
 }
 
-function getPatientNameForId() {
-    var name = 'Peter Snow';
+function setPatientNameForId() {
     $.ajax({
         url: 'http://deltahacks2.appspot.com/user/get/patient/' + currentPatientId,
         type: 'GET',
         success: function (data) {
             console.log("RECEIVED ANSWER");
             console.log(data);
-            name = "answer";
+            
+            var jsondata = JSON.parse(data);
+            var name = jsondata.patient_name;
+            var patientNameElements = $("span#patient-name");
+            currentPatientName = name;
+            for (i = 0; i < patientNameElements.length; i++) {
+                patientNameElements[i].innerHTML = currentPatientName;
+            }
         }
     });
-    return name;
 } 
 
 // http://jasalguero.com/ledld/development/web/expandable-list/
@@ -165,12 +166,22 @@ function switchPatientsClicked() {
 }
 
 function removeModuleForPatient(moduleId) {
+    console.log("Remove module: " + moduleId + " for patient: " + currentPatientId);
+    
     // call api to remove module
     
-    patientModules = getPatientModules();
-    writePatientModulesToHtml();
+    // delet local copy for performance
+    for (var i = 0; i < patientModules.length; i++) {
+        if (patientModules[i].patient_id == currentPatientId) {
+            for (var j = 0; j < patientModules[i].modules.length; j++) {
+                if (parseInt(patientModules[i].modules[j]) == moduleId) {
+                    patientModules[i].modules.splice(j,1);
+                }
+            }
+        }
+    }
     
-    console.log("Remove module: " + moduleId + " for patient: " + currentPatientId);
+    writePatientModulesToHtml();
 }
 
 function closeModalPopup() {
@@ -191,7 +202,7 @@ function addNewModuleClicked() {
 }
 
 function addModuleFromForm() {
-    var isPrivate = $("#public-input")[0].checked; //boolean
+    var isPrivate = $("#public-input")[0].checked; // boolean
     var patientName = $("#patient-name-input")[0].value;
     var category = $("#category-input")[0].value;
     var title = $("#title-input")[0].value;
@@ -221,6 +232,12 @@ function addNewPatientFromForm() {
 function addPreviewedModuleToPatient() {
     // call api to add module to patient
     
+    // add locally for performance
+    for (var i = 0; i < allModules.length; i++) {
+        if (allModules[i].id == previewedModuleId) {
+            patientModules.push(allModules[i]);
+        }
+    }
     console.log("Adding Module " + previewedModuleId + " to patient");
     
     patientModules = getPatientModules();
