@@ -303,14 +303,40 @@ function addNewModuleClicked() {
 
 // TODO: implement this
 function addModuleFromForm() {
-    var moduleObj = new Object();
-    obj.data_type = "txt";
-    obj.title = $("#title-input")[0].value;
-    obj.content = $("#content-input")[0].value;
-    obj.shared = $("#public-input")[0].checked;
-    obj.parentId = $("#category-input")[0].value;
+    var data_type = "txt";
+    var title = $("#title-input")[0].value;
+    var content = "<p>" + $("#content-input")[0].value + "</p>";
+    var shared = $("#public-input")[0].checked;
+    var parentId = $("#category-input")[0].value;
+    if (parentId != null && parentId != "") {
+        var validParentId = false;
+        for (var i = 0; i < allModules.length; i++) {
+            if (allModules[i].id == parentId) {
+                validParentId = true;
+                break;
+            }
+        }
+        if (!validParentId) {
+            console.log("Parent ID could not be found");
+            return;   
+        }
+    }
     
-    writeModulesToHtml();
+     $.ajax({
+        url: 'http://deltahacks2.appspot.com/user/add/condition',
+        type: 'POST',
+        data: {
+            data_type: data_type,
+            title: title,
+            content: content,
+            shared: shared,
+            parentId: parentId
+        },
+        success: function (data) {
+            console.log("success added module");
+            loadModulesFromServer();
+        }
+    });
     closeModalPopup();
 }
 
