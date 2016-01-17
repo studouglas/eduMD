@@ -252,7 +252,6 @@ function removeModuleForPatient(moduleId) {
     console.log("Remove module: " + moduleId + ")");
     console.log(currentPatient.patient_modules);
     
-    
     if (currentPatient.patient_modules != null && currentPatient.patient_models != "") {
         var patientModulesLoc = currentPatient.patient_modules.split(',');
         for (var i = 0; i < patientModulesLoc.length; i++) {
@@ -295,8 +294,8 @@ function closeModalPopup() {
     $("#new-patient-name-input")[0].value = '';
     $("#public-input")[0].checked = true;
     $("#patient-name-input")[0].value = '';
-    $("#title-input")[0].value = '';
-    $("#content-input")[0].value = '';
+//    $("#title-input")[0].value = '';
+//    $("#content-input")[0].value = '';
 }
 
 // DONE
@@ -343,14 +342,16 @@ function addNewPatientFromForm() {
 
 // TODO: check that retains old modules
 function addPreviewedModuleToPatient() {
-    var patientModules = currentPatient.patient_models.split(',');
-    for (var i = 0; i < patientModules.length; i++) {
-        if (patientModules[i] == previewedModuleId) {
-            return;
+    if (currentPatient.patient_models != null) {
+        var patientModulesLoc = currentPatient.patient_models.split(',');
+        for (var i = 0; i < patientModulesLoc.length; i++) {
+            if (patientModulesLoc[i] == previewedModuleId) {
+                return;
+            }
         }
     }
     
-    if (currentPatient.patient_modules != null && currentPatient.patient_models != "") {
+    if (currentPatient.patient_modules != null && currentPatient.patient_modules != '') {
         currentPatient.patient_modules += "," + previewedModuleId;
     } else {
         currentPatient.patient_modules = previewedModuleId;
