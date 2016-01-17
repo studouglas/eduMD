@@ -4,7 +4,6 @@
     <meta charset="utf-8" name="viewport" content="width=device-width, initial-scale=1.0"/>
     <link rel="stylesheet/less" type="text/css" href="../css/site.less">
     <script src="../js/jquery-1.11.3.min.js"></script>
-    <script src="../js/jquery-ui.min.js"></script>
     <script src="../js/less.js"></script>
     <script src="../js/admin.js"></script>
 </head>
@@ -30,26 +29,34 @@
             </div>
             
             <div class="fullscreen-modal-container new-patient-modal">
-            <div class="fullscreen-modal" id="add-new-patient-modal">
-                <div class="fullscreen-modal-fixed-header">
-                    <h3 class="fullscreen-modal-title">Add New Patient</h3>
-                    <a onclick=closeModalPopup()><img class="fullscreen-modal-close-button" src="../img/icon_close.svg"></a>
-                </div>
+                <div class="fullscreen-modal" id="add-new-patient-modal">
+                    <div class="fullscreen-modal-fixed-header">
+                        <h3 class="fullscreen-modal-title">Add New Patient</h3>
+                        <a onclick=closeModalPopup()><img class="fullscreen-modal-close-button" src="../img/icon_close.svg"></a>
+                    </div>
 
-                <div class="fullscreen-modal-content">
-                    <form>
-                        <p>Patient Name:</p>
-                        <input class="input" type="text" id="new-patient-name-input" />
-                    </form>
-                    <div class="button-container-center">
-                        <a class="ghost-button" onclick="closeModalPopup()">Cancel</a>
-                        <a class="ghost-button highlighted-button" onclick="addNewPatientFromForm()">Add Patient</a>
+                    <div class="fullscreen-modal-content">
+                        <form>
+                            <p>Patient Name:</p>
+                            <input class="input" type="text" id="new-patient-name-input" />
+                        </form>
+                        <div class="button-container-center">
+                            <a class="ghost-button" onclick="closeModalPopup()">Cancel</a>
+                            <a class="ghost-button highlighted-button" onclick="addNewPatientFromForm()">Add Patient</a>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-        </div>
 
+        
+        
+        
+        <!-- ===================================================================================== -->
+        
+        
+        
+        
         <div class="module-select-container" style="display: none;"> 
             <div class="patient-header">
                 <p class="patient-name">Patient #<span id="patient-id">0</span>: <strong><span id="patient-name">Test Name</span></strong></p>
@@ -58,16 +65,15 @@
 
             <div class="module-list-container">
                 <h1 class="module-preview-title">All Modules</h1>
-                <input type="text" placeholder="Filter Modules" class="search-modules"/>
                 <button class="add-new-module-btn" onclick="addNewModuleClicked()">Add New Module</button>
-
+                <input type="text" placeholder="Filter Modules" class="search-modules"/>
                 <ul class="module-list">
                 </ul>
             </div>
 
             <div class="module-preview-container">
-                <h1 class="module-preview-title">Dementia Overview</h1>
-                <div class="module-preview-content">
+                <h1 class="module-preview-title" id="module-preview-title">Dementia Overview</h1>
+                <div class="module-preview-content" id="module-preview-content">
                     <p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit.
                     Morbi commodo, ipsum sed pharetra gravida, orci magna rhoncus
                     neque, id pulvinar odio lorem non turpis. Nullam sit amet enim. 
@@ -81,7 +87,7 @@
                     eros.</p>
                 </div>
                 <div class="button-container-center">
-                    <a class="ghost-button highlighted-button">Add to Patient's Modules</a>
+                    <a class="ghost-button highlighted-button" onclick="addPreviewedModuleToPatient()">Add to Patient's Modules</a>
                 </div>
             </div>
 

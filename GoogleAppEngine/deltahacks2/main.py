@@ -245,7 +245,7 @@ class GetPatientHandler(BaseHandler):
 		params = {
 			'patient_id': patient[0].patient_id,
 			'patient_name': patient[0].patient_name,
-			'patient_modules': patient_modules,
+			'patient_modules': patient[0].modules,
 		}
 
 		self.response.out.write(json.dumps(params))
@@ -256,25 +256,36 @@ class AddPatientHandler(BaseHandler):
 		new_patient = Patient(parent=patient_key(DEFAULT_KEY))
 		new_patient.patient_id = int(self.request.get('patient_id'))
 		new_patient.patient_name = self.request.get('patient_name')
-		new_patient. modules = []
+		new_patient.modules = []
 		new_patient.doctor_id = int(self.user_info['user_id'])
 		new_patient.put()
-		self.redirect(self.uri_for('user'))
+		params = {}
+		self.response.out.write(json.dumps(params))
 
 class EditPatientHandler(BaseHandler):
 	@user_required
 	def post(self, patient_id):
-		patient = Patient.query(ancestor=patient_key(DEFAULT_KEY)).filter('patient_id = ', patient_id)
-		patient_id = self.request.get('patient_id')
+		patients_query = Patient.query(ancestor=patient_key(DEFAULT_KEY)).filter(Patient.patient_id == int(patient_id))
+		patients = patients_query.fetch()
+		patient = patients[0]
+		patient.patient_id = int(self.request.get('patient_id'))
 		patient.patient_name = self.request.get('patient_name')
-		patient.modules = ndb.StringProperty('modules')
+		patient.modules = []
+		for e in self.request.get_all('modules'):
+			patient.modules.append(e)
 		patient.put()
+		params = {}
+		self.response.out.write(json.dumps(params))
 
 class DeletePatientHandler(BaseHandler):
 	@user_required
 	def get(self, patient_id):
-		patient = Patient.query(ancestor=patient_key(DEFAULT_KEY)).filter('patient_id = ', patient_id)
+		patients_query = Patient.query(ancestor=patient_key(DEFAULT_KEY)).filter(Patient.patient_id == int(patient_id))
+		patients = patients_query.fetch()
+		patient = patients[0]
 		patient.key.delete()
+		params = {}
+		self.response.out.write(json.dumps(params))
 
 class PatientDocumentHandler(BaseHandler):
 	def get(self, patient_id):
