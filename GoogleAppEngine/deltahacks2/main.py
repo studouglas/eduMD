@@ -190,7 +190,7 @@ class AddConditionHandler(BaseHandler):
 class PatientHandler(BaseHandler):
 	@user_required
 	def get(self, patient_id):
-		conditions = Condition.query(parent=condition_key(DEFAULT_KEY))
+		#conditions = Condition.query(parent=condition_key(DEFAULT_KEY))
 		patient = Patient.query(parent=patient_key(DEFAULT_KEY)).filter('patient_id = ', patient_id)
 		patient_modules = []
 		for module_id in patient.modules:
@@ -200,10 +200,22 @@ class PatientHandler(BaseHandler):
 			'patient_id': patient.patient_id,
 			'patient_name': patient.patient_name,
 			'patient_modules': patient_modules,
-			'conditions' = conditions,
+			'conditions' = sortconditions(conditions),
 		}
 
 		self.response.out.write(json.dumps(params))
+
+	def sortconditions(self,conditions):
+		conditions_sorted = []
+		for e1 in Condition.query(parent=conditions.key(DEFAULT_KEY).filter('parent_id = ', None)).order(-Condition.title)
+			conditions_sorted.append(e1)
+			 for e2 in Condition.query(parent=conditions.key(DEFAULT_KEY).filter('parent_id = ', e1.id).order(-Condition.title)
+			 	if e2 is not None
+			 		conditions_sorted.append(e2)
+			 	for e3 in Condition.query(parent=conditions.key(DEFAULT_KEY).filter('parent_id = ', e2.id).order(-Condition.title)
+			 		if e3 is not None
+			 			conditions_sorted.append(e3)
+
 
 class AddPatientHandler(BaseHandler):
 	@user_required
