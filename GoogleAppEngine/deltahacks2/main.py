@@ -250,13 +250,33 @@ class GetPatientHandler(BaseHandler):
 
 		self.response.out.write(json.dumps(params))
 
+class GetAllPatientHandler(BaseHandler):
+	def get(self):
+		patients_query = Patient.query(ancestor=patient_key(DEFAULT_KEY))
+		patients = patients_query.fetch()
+		param_lst = []
+		for patient in patients:
+			param = {
+				'patient_id': patient.patient_id,
+				'patient_name': patient.patient_name,
+				'patient_modules': patient.modules,
+			}
+			param_lst.append(param)
+
+		params = {
+			'patients': param_lst,
+		}
+
+		self.response.out.write(json.dumps(params))
+
 class AddPatientHandler(BaseHandler):
 	@user_required
 	def post(self):
 		new_patient = Patient(parent=patient_key(DEFAULT_KEY))
 		new_patient.patient_id = int(self.request.get('patient_id'))
 		new_patient.patient_name = self.request.get('patient_name')
-		new_patient.modules = []
+		lst = []
+		new_patient.modules = lst
 		new_patient.doctor_id = int(self.user_info['user_id'])
 		new_patient.put()
 		params = {}
@@ -270,9 +290,10 @@ class EditPatientHandler(BaseHandler):
 		patient = patients[0]
 		patient.patient_id = int(self.request.get('patient_id'))
 		patient.patient_name = self.request.get('patient_name')
-		patient.modules = []
+		lst = []
 		for e in self.request.get_all('modules'):
-			patient.modules.append(e)
+			lst.append(e)
+		patient.modules = lst
 		patient.put()
 		params = {}
 		self.response.out.write(json.dumps(params))
@@ -322,6 +343,7 @@ app = webapp2.WSGIApplication([
     webapp2.Route('/user/edit', EditHandler),
     
     webapp2.Route('/user/get/patient/<patient_id:\d+>', GetPatientHandler),
+    webapp2.Route('/user/get/patient/all', GetAllPatientHandler),
     webapp2.Route('/user/get/condition/<condition_id:\d+>', GetConditionHandler),
     webapp2.Route('/user/get/condition/all', GetAllConditionHandler),
 
