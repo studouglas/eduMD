@@ -1,1 +1,1 @@
-Personalized hospital wait times delivered to your smartphone.
+Personalized, online health care information for patients.
