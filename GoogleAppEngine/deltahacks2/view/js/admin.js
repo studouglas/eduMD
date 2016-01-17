@@ -112,10 +112,10 @@ function sortAllModules() {
     }
 }
 
-// TODO: implement this
+// DONE
 function loadPatientModulesFromAllModules() {
     patientModules = [];
-    var patientModuleNums = currentPatient.modules;
+    var patientModuleNums = currentPatient.patient_modules == null ? [] : currentPatient.patient_modules.split(',');
     for (var i = 0; i < patientModuleNums.length; i++) {
         for (var j = 0; j < allModules.length; j++) {
             if (allModules[j].id == patientModuleNums[i]) {
@@ -214,33 +214,21 @@ function loginPatient() {
     for (i = 0; i < patientIdElements.length; i++) {
         patientIdElements[i].innerHTML = currentPatientId;
     }
+    var patientNameElements = $("span#patient-name");
+    for (var i = 0; i < patientNameElements.length; i++) {
+        patientNameElements[i].innerHTML = currentPatient.patient_name;
+    }
     $(".login-container").hide();
     $(".module-select-container").show();
 }
 
 // DONE
 function getPatientWithId(patientId) {
-    console.log("getting patient");
     for (var i = 0; i < allPatients.length; i++) {
         if (allPatients[i].patient_id == patientId) {
             return allPatients[i];
         }
     }
-//    $.ajax({
-//        url: 'http://deltahacks2.appspot.com/user/get/patient/' + currentPatientId,
-//        type: 'GET',
-//        success: function (data) {
-//            console.log("RECEIVED ANSWER");
-//            console.log(data);
-//            
-//            var jsondata = JSON.parse(data);
-//            currentPatient = jsondata;
-//            var patientNameElements = $("span#patient-name");
-//            for (i = 0; i < patientNameElements.length; i++) {
-//                patientNameElements[i].innerHTML = currentPatient.patient_name;
-//            }
-//        }
-//    });
 } 
 
 // http://jasalguero.com/ledld/development/web/expandable-list/
@@ -256,19 +244,35 @@ function prepareList() {
 
 // DONE
 function switchPatientsClicked() {
-    window.location.href = "adminpatient.html";
+    window.location.href = "/user";
 }
 
 // TODO: implement this
 function removeModuleForPatient(moduleId) {
-    console.log("Remove module: " + moduleId + " for patient: " + currentPatientId);
+    console.log("Remove module: " + moduleId + ")");
+    console.log(currentPatient.patient_modules);
     
-    // call api to remove module
+    if (currentPatient.patient_modules != null && currentPatient.patient_models != "") {
+        var patientModulesLoc = currentPatient.patient_modules.split(',');
+        for (var i = 0; i < patientModulesLoc.length; i++) {
+            patientModulesLoc.splice(i,1);
+            currentPatient.patient_modules = patientModulesLoc.join();
+            break;
+        }
+    } else {
+        return;
+    }
+    console.log(currentPatient.patient_modules);
+    
     $.ajax({
-        url: 'http://deltahacks2.appspot.com/user/delete/patient/' + currentPatientId,
+        url: 'http://deltahacks2.appspot.com/user/edit/patient/' + currentPatientId,
         type: 'POST',
+        data: {'modules': currentPatient.patient_modules,
+               'patient_id':currentPatientId,
+               'patient_name':currentPatient.patient_name
+        },
         success: function (data) {
-            console.log("Successfulyl deleted preview module ");
+            console.log("Successfulyl removed preview module ");
         }
     });
     
@@ -290,9 +294,8 @@ function closeModalPopup() {
     $("#new-patient-name-input")[0].value = '';
     $("#public-input")[0].checked = true;
     $("#patient-name-input")[0].value = '';
-    $("#category-input")[0].value = '';
-    $("#title-input")[0].value = '';
-    $("#content-input")[0].value = '';
+//    $("#title-input")[0].value = '';
+//    $("#content-input")[0].value = '';
 }
 
 // DONE
@@ -339,12 +342,27 @@ function addNewPatientFromForm() {
 
 // TODO: check that retains old modules
 function addPreviewedModuleToPatient() {
-    var modules = currentPatient.modules == null ? [] : currentPatient.modules;
-    modules.push(previewedModuleId);
+    if (currentPatient.patient_models != null) {
+        var patientModulesLoc = currentPatient.patient_models.split(',');
+        for (var i = 0; i < patientModulesLoc.length; i++) {
+            if (patientModulesLoc[i] == previewedModuleId) {
+                return;
+            }
+        }
+    }
+    
+    if (currentPatient.patient_modules != null && currentPatient.patient_modules != '') {
+        currentPatient.patient_modules += "," + previewedModuleId;
+    } else {
+        currentPatient.patient_modules = previewedModuleId;
+    }
+    
+    console.log("Adding Previews: <" + currentPatient.patient_modules + ">");
+    
     $.ajax({
         url: 'http://deltahacks2.appspot.com/user/edit/patient/' + currentPatientId,
         type: 'POST',
-        data: {'modules': modules,
+        data: {'modules': currentPatient.patient_modules,
                'patient_id':currentPatientId,
                'patient_name':currentPatient.patient_name
         },
