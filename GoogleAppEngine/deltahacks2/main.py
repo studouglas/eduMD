@@ -166,15 +166,45 @@ class EditHandler(BaseHandler):
 		self.render_template('edit.html', params)
 
 class GetConditionHandler(BaseHandler):
-	@user_required
 	def get(self, condition_id):
-		condition = Condition.get_by(long(module_id), parent=condition_key(DEFAULT_KEY))
-
-		params = {
-			'condition': condition,
+		condition = Condition.get_by_id(long(condition_id), parent=condition_key(DEFAULT_KEY))
+		param = {
+			'id': condition.key.id(),
+			'title': condition.title,
+			'content': condition.content,
+			'parent_id': condition.parent_id,
+			'data_type': condition.data_type,
+			'shared': condition.shared,
 		}
 
-		self.response.out.write(json.dump(params))
+		params = {
+			'condition': param,
+		}
+
+		self.response.out.write(json.dumps(params))
+
+class GetAllConditionHandler(BaseHandler):
+	def get(self):
+		conditions_query = Condition.query(ancestor=condition_key(DEFAULT_KEY))
+		conditions = conditions_query.fetch()
+		param_lst = []
+		for condition in conditions:
+			param = {
+				'id': condition.key.id(),
+				'title': condition.title,
+				'content': condition.content,
+				'parent_id': condition.parent_id,
+				'data_type': condition.data_type,
+				'shared': condition.shared,
+			}
+			param_lst.append(param)
+
+		params = {
+			'conditions': param_lst,
+		}
+
+		self.response.out.write(json.dumps(params))
+
 
 class AddConditionHandler(BaseHandler):
 	@user_required
@@ -193,7 +223,7 @@ class AddConditionHandler(BaseHandler):
 class EditConditionHandler(BaseHandler):
 	@user_required
 	def post(self, condition_id):
-		condition = Patient.query(parent=condition_key(DEFAULT_KEY)).filter('condition_id = ', condition_id)
+		condition = Patient.query(ancestor=condition_key(DEFAULT_KEY)).filter('condition_id = ', condition_id)
 		condition.title = self.request.get('title')
 		condition.content = self.request.get('content')
 		if self.request.get('parent_id'):
@@ -204,53 +234,29 @@ class EditConditionHandler(BaseHandler):
 class DeleteConditionHandler(BaseHandler):
 	@user_required
 	def get(self, condition_id):
-		patient = Patient.query(parent=patient_key(DEFAULT_KEY)).filter('patient_id = ', patient_id)
+		patient = Patient.query(ancestor=patient_key(DEFAULT_KEY)).filter('patient_id = ', patient_id)
 		patient.key.delete()
 
-class PatientHandler(BaseHandler):
-	@user_required
+class GetPatientHandler(BaseHandler):
 	def get(self, patient_id):
-		#conditions = Condition.query(parent=condition_key(DEFAULT_KEY))
-		#patient = Patient.query(parent=patient_key(DEFAULT_KEY)).filter('patient_id = ', patient_id)
-		patient = Patient.query(parent=patient_key(DEFAULT_KEY), patient.patient_id == patient_id)
-		patient_modules = []
-		for module_id in patient.modules:
-			patient_modules.append(Condition.get_by(long(module_id), parent=condition_key(DEFAULT_KEY)))
+		patient_query = Patient.query(ancestor=patient_key(DEFAULT_KEY)).filter(Patient.patient_id == int(patient_id))
+		patient = patient_query.fetch()
 
 		params = {
-			'patient_id': patient.patient_id,
-			'patient_name': patient.patient_name,
+			'patient_id': patient[0].patient_id,
+			'patient_name': patient[0].patient_name,
 			'patient_modules': patient_modules,
-			'conditions' = sortconditions(conditions),
 		}
 
 		self.response.out.write(json.dumps(params))
-
-	def sortconditions(self,conditions):
-		conditions_sorted = []
-		for e1 in Condition.query(parent=conditions.key(DEFAULT_KEY).filter('parent_id = ', None)).order(-Condition.title)
-			conditions_sorted.append(e1)
-			 for e2 in Condition.query(parent=conditions.key(DEFAULT_KEY).filter('parent_id = ', e1.id).order(-Condition.title)
-			 	if e2 is not None
-			 		conditions_sorted.append(e2)
-			 	for e3 in Condition.query(parent=conditions.key(DEFAULT_KEY).filter('parent_id = ', e2.id).order(-Condition.title)
-			 		if e3 is not None
-			 			conditions_sorted.append(e3)
-			 			for e4 in Condition.query(parent=conditions.key(DEFAULT_KEY).filter('parent_id = ', e3.id).order(-Condition.title)
-			 				if e4 is not None
-			 					conditions_sorted.append(e4)
-			 					for e5 in Condition.query(parent=conditions.key(DEFAULT_KEY).filter('parent_id = ', e4.id).order(-Condition.title)
-			 						if e5 is not None
-			 							conditions_sorted.append(e5)
-
-
 
 class AddPatientHandler(BaseHandler):
 	@user_required
 	def post(self):
 		new_patient = Patient(parent=patient_key(DEFAULT_KEY))
-		new_patient.patient_id = long(self.request.get('patient_id'))
+		new_patient.patient_id = int(self.request.get('patient_id'))
 		new_patient.patient_name = self.request.get('patient_name')
+		new_patient. modules = []
 		new_patient.doctor_id = int(self.user_info['user_id'])
 		new_patient.put()
 		self.redirect(self.uri_for('user'))
@@ -258,7 +264,7 @@ class AddPatientHandler(BaseHandler):
 class EditPatientHandler(BaseHandler):
 	@user_required
 	def post(self, patient_id):
-		patient = Patient.query(parent=patient_key(DEFAULT_KEY)).filter('patient_id = ', patient_id)
+		patient = Patient.query(ancestor=patient_key(DEFAULT_KEY)).filter('patient_id = ', patient_id)
 		patient_id = self.request.get('patient_id')
 		patient.patient_name = self.request.get('patient_name')
 		patient.modules = ndb.StringProperty('modules')
@@ -267,21 +273,25 @@ class EditPatientHandler(BaseHandler):
 class DeletePatientHandler(BaseHandler):
 	@user_required
 	def get(self, patient_id):
-		patient = Patient.query(parent=patient_key(DEFAULT_KEY)).filter('patient_id = ', patient_id)
+		patient = Patient.query(ancestor=patient_key(DEFAULT_KEY)).filter('patient_id = ', patient_id)
 		patient.key.delete()
 
 class PatientDocumentHandler(BaseHandler):
 	def get(self, patient_id):
-		patient = Patient.query(parent=patient_key(DEFAULT_KEY)).filter('patient_id = ', patient_id)
+		patient = Patient.query(ancestor=patient_key(DEFAULT_KEY)).filter('patient_id = ', patient_id)
 		patient_modules = []
 		for module_id in patient.modules:
-			patient_modules.append(Condition.get_by(long(module_id), parent=condition_key(DEFAULT_KEY)))
+			patient_modules.append(Condition.get_by_id(long(module_id), parent=condition_key(DEFAULT_KEY)))
 
 		params = {
 			'patient_id': patient.patient_id,
 			'patient_name': patient.patient_name,
 			'patient_modules': patient_modules,
 		}
+
+class TestHandler(BaseHandler):
+	def get(self):
+		self.render_template('admin/adminpatient.html')
 
 config = {
 	'webapp2_extras.auth': {
@@ -299,8 +309,11 @@ app = webapp2.WSGIApplication([
     
     webapp2.Route('/user', UserHandler, name='user'),
     webapp2.Route('/user/edit', EditHandler),
-    webapp2.Route('/user/patient/<patient_id:\d+>', PatientHandler),
     
+    webapp2.Route('/user/get/patient/<patient_id:\d+>', GetPatientHandler),
+    webapp2.Route('/user/get/condition/<condition_id:\d+>', GetConditionHandler),
+    webapp2.Route('/user/get/condition/all', GetAllConditionHandler),
+
     webapp2.Route('/user/add/patient', AddPatientHandler),
     webapp2.Route('/user/edit/patient/<patient_id:\d+>', EditPatientHandler),
     webapp2.Route('/user/delete/patient/<patient_id:\d+>', DeletePatientHandler),
@@ -311,6 +324,8 @@ app = webapp2.WSGIApplication([
     webapp2.Route('/user/delete/condition', DeleteConditionHandler),
     
     webapp2.Route('/patient/<patient_id:\d+>', PatientDocumentHandler),
+
+	webapp2.Route('/test', TestHandler),
 ], debug=True, config=config)
 
 
