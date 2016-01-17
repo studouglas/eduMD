@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block maincontent %}
+
+<form class="form" action= "/user" method="GET">
+	<button type="submit" class="btn">Back</button>
+</form>
+
+<h1>New Condition</h1>
+<form action="/user/add/condition" method="POST">
+	<label for="title">Title:</label>
+	<input type="text" name="title"/><br>
+	<label for="parent_id">Parent ID:</label>
+	<input type="number" name="parent_id"/><br>
+	<label for="content">Content: </label>
+	<textarea name="content"></textarea>
+	<label for="shared">Shared:</label>
+	<input type="radio" name="shared" value="True" checked> True
+	<input type="radio" name="shared" value="False"> False<br>
+	<button type="submit" value="Publish">Add</button>
+</form>
+
+<script type="text/javascript" src="/js/tinymce/tinymce.min.js"></script>
+	<script type="text/javascript">
+		tinymce.init({
+			selector: "textarea",
+			width: "650",
+			height: "500",
+			theme: "modern",
+			plugins: [
+				"advlist autolink lists link image charmap print preview hr pagebreak",
+				"searchreplace wordcount visualblocks visualchars code fullscreen",
+				"insertdatetime media nonbreaking save table contextmenu directionality",
+				"emoticons template paste textcolor colorpicker textpattern imagetools"
+			],
+			toolbar1: "insertfile undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image",
+			toolbar2: "preview media | forecolor backcolor emoticons | code",
+			image_advtab: true,
+			paste_data_images: true,
+			resize: false,
+			content_css: "css/texteditor.css",
+		});
+	</script>
+
+{% endblock %}

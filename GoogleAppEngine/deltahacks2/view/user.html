@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block maincontent %}
+
+<h1>Welcome</h1>
+
+<h1>Type Patient</h1>
+
+<h1>Add Patient</h1>
+<form action="/user/add/patient" method="POST">
+	<label for="patient_id">Patient ID:</label>
+	<input type="text" name="patient_id"/><br>
+	<label for="content">Patient Name: </label>
+	<input type="text" name="patient_name"/><br>
+	<button type="submit" value="Publish">Add</button>
+</form>
+
+{% endblock %}
