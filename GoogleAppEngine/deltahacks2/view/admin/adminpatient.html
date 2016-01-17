@@ -1,165 +1,166 @@
 <!doctype html>
 <head>
-	<title>Admin Portal</title>
-	<meta charset="utf-8" name="viewport" content="width=device-width, initial-scale=1.0"/>
-	<link rel="stylesheet/less" type="text/css" href="../css/site.less">
-	<script src="../js/jquery-1.11.3.min.js"></script>
-	<script src="../js/less.js"></script>
-	<script src="../js/admin.js"></script>
+    <title>Admin Portal</title>
+    <meta charset="utf-8" name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <link rel="stylesheet/less" type="text/css" href="../css/site.less">
+    <script src="../js/jquery-1.11.3.min.js"></script>
+    <script src="../js/less.js"></script>
+    <script src="../js/admin.js"></script>
 </head>
 
 <body>
-	<div class="main-content-container">
-		
-		<header class="header-background">
-			<a href="/user" class="nav-title">Admin Portal</a>
-			<ul class="nav-list">
-				<a href="/edit/modules"><li>Edit Modules</li></a>
-				<a href="/user"><li class="current-page">Patient</li></a>
-			</ul>
-		</header>
-		
-		<div class="center-container login-container">
-			<h1 class="input-label">Enter Patient ID:</h1>
-			<input class="text-input" id="patient-id-input" type="text" placeholder="Patient ID" />
-			<p id="patient-name-label"></p>
-			<div class="button-container-center">
-				<a onclick="addNewPatient()" class="ghost-button" id="add-patient-btn">Add New Patient</a>
-				<a onclick="loginPatient()" class="ghost-button highlighted-button disabled-button" id="login-button">Go</a>
-			</div>
-			
-			<div class="fullscreen-modal-container new-patient-modal">
-				<div class="fullscreen-modal" id="add-new-patient-modal">
-					<div class="fullscreen-modal-fixed-header">
-						<h3 class="fullscreen-modal-title">Add New Patient</h3>
-						<a onclick=closeModalPopup()><img class="fullscreen-modal-close-button" src="../img/icon_close.svg"></a>
-					</div>
+    <div class="main-content-container">
+        
+        <header class="header-background">
+            <img src="../img/eduMD3.png" class="header-logo" alt="Logo"> 
+            <a href="/user" class="nav-title">Admin Portal</a>
+            <ul class="nav-list">
+                <a><li id="email-link-btn" style="display: none;" onclick="generateMailto()">E-mail Link ✉︎</li></a>            
+                <a href="/user"><li id="switch-patients-btn" style="display: none;">Switch Patients →</li></a>
+                <a href="/logout"><li id="switch-patients-btn" style="display: none;">Logout</li></a>
+            </ul>
+        </header>
+        
+        <div class="center-container login-container">
+            <h1 class="input-label">Enter Patient ID:</h1>
+            <input class="text-input" id="patient-id-input" type="text" placeholder="Patient ID" />
+            <p id="patient-name-label"></p>
+            <div class="button-container-center">
+                <a onclick="addNewPatient()" class="ghost-button" id="add-patient-btn">Add New Patient</a>
+                <a onclick="loginPatient()" class="ghost-button highlighted-button disabled-button" id="login-button">Go</a>
+            </div>
+            
+            <div class="fullscreen-modal-container new-patient-modal">
+                <div class="fullscreen-modal" id="add-new-patient-modal">
+                    <div class="fullscreen-modal-fixed-header">
+                        <h3 class="fullscreen-modal-title">Add New Patient</h3>
+                        <a onclick=closeModalPopup()><img class="fullscreen-modal-close-button" src="../img/icon_close.svg"></a>
+                    </div>
 
-					<div class="fullscreen-modal-content">
-						<form>
-							<p>Patient ID:</p>
-							<input class="input" type="text" id="new-patient-id-input" />
-							
-							<p>Patient Name:</p>
-							<input class="input" type="text" id="new-patient-name-input" />
-						</form>
-						<div class="button-container-center">
-							<a class="ghost-button" onclick="closeModalPopup()">Cancel</a>
-							<a class="ghost-button highlighted-button" onclick="addNewPatientFromForm()">Add Patient</a>
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
+                    <div class="fullscreen-modal-content">
+                        <form>
+                            <p style="text-align: left;">Patient ID:</p>
+                            <input class="input" type="text" id="new-patient-id-input" />
+                            
+                            <p style="text-align: left;">Patient Name:</p>
+                            <input class="input" type="text" id="new-patient-name-input" />
+                        </form>
+                        <div class="button-container-center">
+                            <a class="ghost-button" onclick="closeModalPopup()">Cancel</a>
+                            <a class="ghost-button highlighted-button" onclick="addNewPatientFromForm()">Add Patient</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-		
-		
-		
-		<!-- ===================================================================================== -->
-		
-		
-		
-		
-		<div class="module-select-container" style="display: none;"> 
-			<div class="patient-header">
-				<p class="patient-name">Patient #<span id="patient-id">0</span>: <strong><span id="patient-name">Test Name</span></strong></p>
-				<button class="switch-patients-btn" onclick="switchPatientsClicked()">Switch Patients</button>
-			</div>
+        
+        
+        
+        <!-- ===================================================================================== -->
+        
+        
+        
+        
+        <div class="module-select-container" style="display: none;"> 
+            <div class="patient-header">
+                <p class="patient-name">Patient #<span id="patient-id">0</span>: <strong><span id="patient-name">Test Name</span></strong></p>
+            </div>
 
-			<div class="module-list-container">
-				<h1 class="module-preview-title">All Modules</h1>
-				<button class="add-new-module-btn" onclick="addNewModuleClicked()">Add New Module</button>
-				<input type="text" placeholder="Filter Modules" class="search-modules"/>
-				<ul class="module-list">
-				</ul>
-			</div>
+            <div class="module-list-container">
+                <h1 class="module-preview-title">All Modules</h1>
+                <button class="add-new-module-btn" onclick="addNewModuleClicked()">Add New Module</button>
+                <input type="text" placeholder="Filter Modules" class="search-modules"/>
+                <ul class="module-list">
+                </ul>
+            </div>
 
-			<div class="module-preview-container">
-				<h1 class="module-preview-title" id="module-preview-title">Select a Module On The Left</h1>
-				<div class="module-preview-content" id="module-preview-content">
-					<p>Select a module to see its contents, and add it to the patient's profile if it's relevant.</p>
-				</div>
-				<div class="button-container-center" id="add-module-to-patient-btn" style="display: none;">
-					<a class="ghost-button highlighted-button" onclick="addPreviewedModuleToPatient()">Add to Patient's Modules</a>
-				</div>
-			</div>
+            <div class="module-preview-container">
+                <h1 class="module-preview-title" id="module-preview-title">Select a Module On The Left</h1>
+                <div class="module-preview-content" id="module-preview-content">
+                    <p>Select a module to see its contents, and add it to the patient's profile if it's relevant.</p>
+                </div>
+                <div class="button-container-center" id="add-module-to-patient-btn" style="display: none;">
+                    <a class="ghost-button highlighted-button" onclick="addPreviewedModuleToPatient()">Add to Patient's Modules</a>
+                </div>
+            </div>
 
-			<div class="patient-modules-container">
-				<h1 class="module-preview-title"><span class="test" id="patient-name"></span>'s Modules</h1>
-				<ul class="module-list-patient">
-				</ul>
-			</div>
-			
-			<div style="clear: both;"></div>
-			
-		<div class="fullscreen-modal-container new-module-modal">
-			<div class="fullscreen-modal" id="add-new-module-modal">
-				<div class="fullscreen-modal-fixed-header">
-					<h3 class="fullscreen-modal-title">Add New Module</h3>
-					<a onclick=closeModalPopup()><img class="fullscreen-modal-close-button" src="../img/icon_close.svg"></a>
-				</div>
+            <div class="patient-modules-container">
+                <h1 class="module-preview-title"><span class="test" id="patient-name"></span>'s Modules</h1>
+                <ul class="module-list-patient">
+                </ul>
+            </div>
+            
+            <div style="clear: both;"></div>
+            
+        <div class="fullscreen-modal-container new-module-modal">
+            <div class="fullscreen-modal" id="add-new-module-modal">
+                <div class="fullscreen-modal-fixed-header">
+                    <h3 class="fullscreen-modal-title">Add New Module</h3>
+                    <a onclick=closeModalPopup()><img class="fullscreen-modal-close-button" src="../img/icon_close.svg"></a>
+                </div>
 
-				<div class="fullscreen-modal-content">
-					<form>
-						<div class="col-6">
-							<p for="private">Make Module Private:</p>
-							<input type="checkbox" name="private" id="public-input" checked />
-						</div>
-						<div class="col-6">
-							<p for="patient">Patient (Private Module Only):</p>
-							<input class="input" type="text" name="patient" id="patient-name-input" />
-						</div>
-						<div style="clear: both;"></div>
-						
-						<p for="title">Module Title:</p>
-						<input class="input" type="text" name="title"/><br>
-						<p for="parent_id">Category ID (not required):</p>
-						<input class="input" type="input" name="parent_id"/><br>
-						<p for="content">Content: </p>
-						<textarea class="textarea-input" name="content"></textarea>
+                <div class="fullscreen-modal-content">
+                    <form>
+                        <div class="col-6">
+                            <p for="private">Make Module Private:</p>
+                            <input type="checkbox" name="private" id="public-input" checked />
+                        </div>
+                        <div class="col-6">
+                            <p for="patient">Patient (Private Module Only):</p>
+                            <input class="input" type="text" name="patient" id="patient-name-input" />
+                        </div>
+                        <div style="clear: both;"></div>
+                        
+                        <p for="title">Module Title:</p>
+                        <input class="input" type="text" name="title"/><br>
+                        <p for="parent_id">Category ID (not required):</p>
+                        <input class="input" type="input" name="parent_id"/><br>
+                        <p for="content">Content: </p>
+                        <textarea class="textarea-input" name="content"></textarea>
 <!--                        <button type="submit" value="Publish">Add</button>-->
-						<!--
-						<p>Category (not required):</p>
-						<input class="input" id="category-input" type="text" /><br><br>
-						<p>Module Title:</p>
-						<input class="input" id="title-input" type="text"><br><br>
-						
-						<p>Module Content:</p>
-						<textarea class="textarea-input" id="content-input"></textarea>
-						-->
-						<div class="button-container-center">
-							<a class="ghost-button" onclick="closeModalPopup()">Cancel</a>
-							<a class="ghost-button highlighted-button" onclick="addModuleFromForm()">Add Module</a>
-						</div>
-					</form>
+                        <!--
+                        <p>Category (not required):</p>
+                        <input class="input" id="category-input" type="text" /><br><br>
+                        <p>Module Title:</p>
+                        <input class="input" id="title-input" type="text"><br><br>
+                        
+                        <p>Module Content:</p>
+                        <textarea class="textarea-input" id="content-input"></textarea>
+                        -->
+                        <div class="button-container-center">
+                            <a class="ghost-button" onclick="closeModalPopup()">Cancel</a>
+                            <a class="ghost-button highlighted-button" onclick="addModuleFromForm()">Add Module</a>
+                        </div>
+                    </form>
 
-					
-				</div>
-			</div>
-		</div>
-			
-		</div><!-- module-select-container -->
-	</div><!-- /main-content-container -->
+                    
+                </div>
+            </div>
+        </div>
+            
+        </div><!-- module-select-container -->
+    </div><!-- /main-content-container -->
 </body>
 
 <script type="text/javascript" src="../js/tinymce/tinymce.min.js"></script>
-	<script type="text/javascript">
-		tinymce.init({
-			selector: "textarea",
-			width: "650",
-			height: "500",
-			theme: "modern",
-			plugins: [
-				"advlist autolink lists link image charmap print preview hr pagebreak",
-				"searchreplace wordcount visualblocks visualchars code fullscreen",
-				"insertdatetime media nonbreaking save table contextmenu directionality",
-				"emoticons template paste textcolor colorpicker textpattern imagetools"
-			],
-			toolbar1: "insertfile undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image",
-			toolbar2: "preview media | forecolor backcolor emoticons | code",
-			image_advtab: true,
-			paste_data_images: true,
-			resize: false,
+    <script type="text/javascript">
+        tinymce.init({
+            selector: "textarea",
+            width: "650",
+            height: "500",
+            theme: "modern",
+            plugins: [
+                "advlist autolink lists link image charmap print preview hr pagebreak",
+                "searchreplace wordcount visualblocks visualchars code fullscreen",
+                "insertdatetime media nonbreaking save table contextmenu directionality",
+                "emoticons template paste textcolor colorpicker textpattern imagetools"
+            ],
+            toolbar1: "insertfile undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image",
+            toolbar2: "preview media | forecolor backcolor emoticons | code",
+            image_advtab: true,
+            paste_data_images: true,
+            resize: false,
 //            content_css: "css/texteditor.css",
-		});
+        });
 </script>
