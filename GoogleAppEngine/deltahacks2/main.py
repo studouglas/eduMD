@@ -127,7 +127,7 @@ class LoginHandler(BaseHandler):
 		username = self.request.get('username')
 		params = {
 			'username': username,
-			'failed':	failed
+			'failed':   failed
 		}
 		self.render_template('login.html', params)
 
@@ -171,6 +171,7 @@ class EditModulesHandler(BaseHandler):
 		self.render_template('admin/editmodules.html', params)
 
 class GetConditionHandler(BaseHandler):
+	@user_required
 	def get(self, condition_id):
 		condition = Condition.get_by_id(long(condition_id), parent=condition_key(DEFAULT_KEY))
 		param = {
@@ -189,6 +190,7 @@ class GetConditionHandler(BaseHandler):
 		self.response.out.write(json.dumps(params))
 
 class GetAllConditionHandler(BaseHandler):
+	@user_required
 	def get(self):
 		conditions_query = Condition.query(ancestor=condition_key(DEFAULT_KEY))
 		conditions = conditions_query.fetch()
@@ -243,6 +245,7 @@ class DeleteConditionHandler(BaseHandler):
 		patient.key.delete()
 
 class GetPatientHandler(BaseHandler):
+	@user_required
 	def get(self, patient_id):
 		patient_query = Patient.query(ancestor=patient_key(DEFAULT_KEY)).filter(Patient.patient_id == int(patient_id))
 		patient = patient_query.fetch()
@@ -256,6 +259,7 @@ class GetPatientHandler(BaseHandler):
 		self.response.out.write(json.dumps(params))
 
 class GetAllPatientHandler(BaseHandler):
+	@user_required
 	def get(self):
 		patients_query = Patient.query(ancestor=patient_key(DEFAULT_KEY))
 		patients = patients_query.fetch()
@@ -310,21 +314,19 @@ class DeletePatientHandler(BaseHandler):
 		self.response.out.write(json.dumps(params))
 
 class PatientDocumentHandler(BaseHandler):
-	def get(self, patient_id):
-		patient = Patient.query(ancestor=patient_key(DEFAULT_KEY)).filter('patient_id = ', patient_id)
-		patient_modules = []
-		for module_id in patient.modules:
-			patient_modules.append(Condition.get_by_id(long(module_id), parent=condition_key(DEFAULT_KEY)))
-
-		params = {
-			'patient_id': patient.patient_id,
-			'patient_name': patient.patient_name,
-			'patient_modules': patient_modules,
-		}
-
-class TestHandler(BaseHandler):
 	def get(self):
-		self.render_template('admin/adminpatient.html')
+		# patient = Patient.query(ancestor=patient_key(DEFAULT_KEY)).filter('patient_id = ', patient_id)
+		# patient_modules = []
+		# for module_id in patient.modules:
+		# 	patient_modules.append(Condition.get_by_id(long(module_id), parent=condition_key(DEFAULT_KEY)))
+
+		# params = {
+		# 	'patient_id': patient.patient_id,
+		# 	'patient_name': patient.patient_name,
+		# 	'patient_modules': patient_modules,
+		# }
+		params = {}
+		self.render_template('patient/patient.html', params)
 
 config = {
 	'webapp2_extras.auth': {
@@ -336,31 +338,30 @@ config = {
 }
 
 app = webapp2.WSGIApplication([
-    webapp2.Route('/', LoginHandler, name='login'),
-    webapp2.Route('/logout', LogoutHandler, name='logout'),
-    webapp2.Route('/signup', SignUpHandler),
-    
-    webapp2.Route('/user', UserHandler, name='user'),
-    webapp2.Route('/edit/modules', EditModulesHandler),
-    webapp2.Route('/user/edit', EditHandler),
-    
-    webapp2.Route('/user/get/patient/<patient_id:\d+>', GetPatientHandler),
-    webapp2.Route('/user/get/patient/all', GetAllPatientHandler),
-    webapp2.Route('/user/get/condition/<condition_id:\d+>', GetConditionHandler),
-    webapp2.Route('/user/get/condition/all', GetAllConditionHandler),
+	webapp2.Route('/', LoginHandler, name='login'),
+	webapp2.Route('/logout', LogoutHandler, name='logout'),
+	webapp2.Route('/signup', SignUpHandler),
+	
+	webapp2.Route('/user', UserHandler, name='user'),
+	webapp2.Route('/edit/modules', EditModulesHandler),
+	webapp2.Route('/user/edit', EditHandler),
+	
+	webapp2.Route('/user/get/patient/<patient_id:\d+>', GetPatientHandler),
+	webapp2.Route('/user/get/patient/all', GetAllPatientHandler),
+	webapp2.Route('/user/get/condition/<condition_id:\d+>', GetConditionHandler),
+	webapp2.Route('/user/get/condition/all', GetAllConditionHandler),
 
-    webapp2.Route('/user/add/patient', AddPatientHandler),
-    webapp2.Route('/user/edit/patient/<patient_id:\d+>', EditPatientHandler),
-    webapp2.Route('/user/delete/patient/<patient_id:\d+>', DeletePatientHandler),
-    
-    webapp2.Route('/user/condition/<condition_id:\d+>', GetConditionHandler),
-    webapp2.Route('/user/add/condition', AddConditionHandler),
-    webapp2.Route('/user/edit/condition', EditConditionHandler),
-    webapp2.Route('/user/delete/condition', DeleteConditionHandler),
-    
-    webapp2.Route('/patient/<patient_id:\d+>', PatientDocumentHandler),
+	webapp2.Route('/user/add/patient', AddPatientHandler),
+	webapp2.Route('/user/edit/patient/<patient_id:\d+>', EditPatientHandler),
+	webapp2.Route('/user/delete/patient/<patient_id:\d+>', DeletePatientHandler),
+	
+	webapp2.Route('/user/condition/<condition_id:\d+>', GetConditionHandler),
+	webapp2.Route('/user/add/condition', AddConditionHandler),
+	webapp2.Route('/user/edit/condition', EditConditionHandler),
+	webapp2.Route('/user/delete/condition', DeleteConditionHandler),
+	
+	webapp2.Route('/patient', PatientDocumentHandler),
 
-	webapp2.Route('/test', TestHandler),
 ], debug=True, config=config)
 
 
