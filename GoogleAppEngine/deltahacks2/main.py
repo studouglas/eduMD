@@ -211,7 +211,8 @@ class PatientHandler(BaseHandler):
 	@user_required
 	def get(self, patient_id):
 		#conditions = Condition.query(parent=condition_key(DEFAULT_KEY))
-		patient = Patient.query(parent=patient_key(DEFAULT_KEY)).filter('patient_id = ', patient_id)
+		#patient = Patient.query(parent=patient_key(DEFAULT_KEY)).filter('patient_id = ', patient_id)
+		patient = Patient.query(parent=patient_key(DEFAULT_KEY), patient.patient_id == patient_id)
 		patient_modules = []
 		for module_id in patient.modules:
 			patient_modules.append(Condition.get_by(long(module_id), parent=condition_key(DEFAULT_KEY)))
@@ -235,6 +236,13 @@ class PatientHandler(BaseHandler):
 			 	for e3 in Condition.query(parent=conditions.key(DEFAULT_KEY).filter('parent_id = ', e2.id).order(-Condition.title)
 			 		if e3 is not None
 			 			conditions_sorted.append(e3)
+			 			for e4 in Condition.query(parent=conditions.key(DEFAULT_KEY).filter('parent_id = ', e3.id).order(-Condition.title)
+			 				if e4 is not None
+			 					conditions_sorted.append(e4)
+			 					for e5 in Condition.query(parent=conditions.key(DEFAULT_KEY).filter('parent_id = ', e4.id).order(-Condition.title)
+			 						if e5 is not None
+			 							conditions_sorted.append(e5)
+
 
 
 class AddPatientHandler(BaseHandler):
