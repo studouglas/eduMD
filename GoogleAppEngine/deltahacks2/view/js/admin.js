@@ -244,7 +244,7 @@ function prepareList() {
 
 // DONE
 function switchPatientsClicked() {
-    window.location.href = "/user";
+    window.location.href = "adminpatient.html";
 }
 
 // TODO: implement this
