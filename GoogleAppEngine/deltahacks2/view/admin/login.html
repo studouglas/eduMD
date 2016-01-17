@@ -12,14 +12,10 @@
 	<div class="main-content-container">
 		
 		<header class="header-background">
-			<a href="/user" class="nav-title">Admin Portal</a>
-			<ul class="nav-list">
-				<a href="/edit/modules"><li>Edit Modules</li></a>
-				<a href="/user"><li class="current-page">Patient</li></a>
-			</ul>
+			<img src="img/eduMD3.png" class="header-logo" alt="Logo">
 		</header>
 		
-		<div class="center-container login-container">
+		<!-- <div class="center-container login-container">
 			<h1 class="input-label">Enter Patient ID:</h1>
 			<input class="text-input" id="patient-id-input" type="text" placeholder="Patient ID" />
 			<p id="patient-name-label"></p>
@@ -27,13 +23,13 @@
 				<a onclick="addNewPatient()" class="ghost-button" id="add-patient-btn">Add New Patient</a>
 				<a onclick="loginPatient()" class="ghost-button highlighted-button disabled-button" id="login-button">Go</a>
 			</div>
-		</div>
-		<form class="form" action= "/" method="POST">
-			<label for="username">Username</label>
+		</div> -->
+		<form class="form center-container login-container" action= "/" method="POST">
+			<p style="text-align: left;">Username:</p>
 			<input class="text-input" id="patient-id-input" type="text" value="{{ username }}" name="username"/>
-			<label for="password">Password</label>
-			<input type="password" name="password"/>
-			<button type="submit" class="btn">Login</button>
+			<p style="text-align: left;">Password:</p>
+			<input class="text-input" type="password" name="password"/>
+			<button type="submit" class="ghost-button" id="add-patient-btn">Login</button>
 		</form>
 	</div><!-- /main-content-container -->
 </body>

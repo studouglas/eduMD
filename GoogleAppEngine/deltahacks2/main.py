@@ -129,7 +129,7 @@ class LoginHandler(BaseHandler):
 			'username': username,
 			'failed':   failed
 		}
-		self.render_template('login.html', params)
+		self.render_template('admin/login.html', params)
 
 class SignUpHandler(BaseHandler):
 	def get(self):
