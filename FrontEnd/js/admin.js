@@ -206,7 +206,7 @@ function loginPatient() {
     }
     
     $("#switch-patients-btn").show();
-    
+    $("#email-link-btn").show();
     currentPatientId = patientId;
     currentPatient = getPatientWithId(patientId);
     
