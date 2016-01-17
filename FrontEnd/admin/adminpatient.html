@@ -14,8 +14,8 @@
         <header class="header-background">
             <a href="index.html" class="nav-title">Admin Portal</a>
             <ul class="nav-list">
-                <a href="editmodules.html"><li>Edit Modules</li></a>
-                <a href="adminpatient.html"><li class="current-page">Patient</li></a>
+<!--                <a href="editmodules.html"><li>Edit Modules</li></a>-->
+<!--                <a href="adminpatient.html"><li class="current-page">Patient</li></a>-->
             </ul>
         </header>
         
@@ -112,11 +112,13 @@
                         <div style="clear: both;"></div>
                         
                         <p for="title">Module Title:</p>
-                        <input class="input" type="text" name="title"/><br>
+                        <input class="input" type="text" name="title" id="title-input"/><br>
+                        
                         <p for="parent_id">Category ID (not required):</p>
-                        <input class="input" type="input" name="parent_id"/><br>
+                        <input class="input" type="input" name="parent_id" id="category-input"/><br>
+                        
                         <p for="content">Content: </p>
-                        <textarea class="textarea-input" name="content"></textarea>
+                        <textarea class="textarea-input" name="content" id="content-input"></textarea>
 <!--                        <button type="submit" value="Publish">Add</button>-->
                         <!--
                         <p>Category (not required):</p>
