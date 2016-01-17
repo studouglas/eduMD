@@ -1,12 +1,12 @@
 var currentPatientId = "22";
-var currentPatientName = "John Sno";
-var allModules; // array of below objects, parent is 
-var patientModules; // array of below objects
+var currentPatient;
+var allModules = []; // array of below objects, parent is 
+var patientModules = []; // array of below objects
 var previewedModuleId;
 
 /* JSON for Modules ==============
 {
-    "moduleId":"10",
+    "module_id":"10",
     "title":"Dealing with Anger",
     "content":"<p>The steps to...</p>",
     "parent_id":"40" or "",
@@ -37,78 +37,99 @@ $(document).ready(function () {
     $(".search-modules").bind('input', function () {            
         writeModulesToHtml($(this).val());
     });
+});
+
+function showModuleOverview(moduleId) {
+    console.log("showOverview(" + moduleId + ")");
+    for (var i = 0; i < allModules.length; i++) {
+        if (allModules[i].id == moduleId) {
+            $("#module-preview-title")[0].innerHTML = allModules[i].title;
+            $("#module-preview-content")[0].innerHTML = allModules[i].content;
+            previewedModuleId = moduleId;
+        }
+    }
+}
+
+function loadModulesFromServer() {
+    // get in ajax, on success write to DOM
+    $.ajax({
+        url: 'http://deltahacks2.appspot.com/user/get/condition/5094432508477440',
+        type: 'GET',
+        success: function (data) {
+            console.log("RECEIVED ANSWER (loadModulesFromServer): ");
+            allModules.push(JSON.parse(data).condition);
+            console.log(allModules);
+            writeModulesToHtml();
+        }
+    });
+}
+
+function loadPatientModulesFromAllModules() {
+//    patientModules = [];
+//    var patientModuleNums = currentPatient.modules;
+//    for (var i = 0; i < patientModuleNums.length; i++) {
+//        for (var j = 0; j < allModules.length; j++) {
+//            if (allModules[j].id == patientModuleNums[i]) {
+//                patientModules.push(JSON.parse(JSON.stringify(allModules[j]))); // creates copy, not ref
+//            }
+//        }
+//    }
+//    
+//    writePatientModulesToHtml();
+}
+
+function writeModulesToHtml(filter) {
+    var modulesToWrite = (filter == null || filter == '') ? allModules : filterModules(filter);
+    
+    var moduleListHtml = '';
+    for (i = 0; i < modulesToWrite.length; i++) {
+        var id = modulesToWrite[i].id;
+        var title = modulesToWrite[i].title;
+        moduleListHtml += '\n<li id="' + id + '"><p class="module-title">' + title + '</p></li>';
+    }
+//    moduleListHtml += '<li id="all_104"><p class="module-title">Multiple Sclerosis</p></li>\n'
+//    moduleListHtml += '<li id="all_105"><p class="module-title">Dementia</p></li>\n'
+//    moduleListHtml += '<li id="all_106"><p class="module-title">Alzheimer\'s</p></li>\n'
+//    moduleListHtml += '<li id="all_104" class="module-parent">\n'
+//    moduleListHtml += '<p class="module-title module-parent-title">Respitory</p>\n'
+//    moduleListHtml += '<ul class="module-children-list">\n'
+//    moduleListHtml += '<li id="all_107"><p class="module-title">Asthma</p></li>\n'
+//    moduleListHtml += '<li id="all_108"><p class="module-title">Ashtma 2</p></li>\n'
+//    moduleListHtml += '<li id="all_109"><p class="module-title">Asthma 3</p></li>\n'
+//    moduleListHtml += '<li id="all_110"><p class="module-title">Asthma 4</p></li>\n'
+//    moduleListHtml += '</ul>\n'
+//    moduleListHtml += '</li>\n'
+//    moduleListHtml += '<li id="all_111"><p class="module-title">Stroke</p></li>\n'
+    $(".module-list")[0].innerHTML = moduleListHtml;
     
     $(".module-list li").click(function () {
         if (!$(this).hasClass("module-parent")) {
             showModuleOverview(this.id);   
         }
     });
-});
-
-function showModuleOverview(moduleId) {
-    $("#module-preview-title")[0].innerHTML = "MODULE: " + moduleId;
-    $("#module-preview-content")[0].innerHTML = "<p>CONTENT HERE</p>";
-    previewedModuleId = moduleId;
-}
-
-function loadModulesFromServer() {
-    // get in ajax, on success write to DOM
-    
-    writeModulesToHtml();
-}
-
-function loadPatientModulesFromServer() {
-    // get in ajax, on success write to DOM
-    
-    writePatientModulesToHtml();
-}
-
-function writeModulesToHtml(filter) {
-    var modulesToWrite = (filter == '') ? allModules : filterModules(filter);
-    
-    var moduleListHtml = '';
-//    for (i = 0; i < modulesToWrite.length; i++) {
-//        var id = modulesToWrite[i].module_id;
-//        var title = modulesToWrite[i].title;
-//        moduleListHtml += '\n<li id="all_' + id + '"><p class="module-title">' + title + '</p></li>';
-//    }
-    moduleListHtml += '<li id="all_104"><p class="module-title">Multiple Sclerosis</p></li>\n'
-    moduleListHtml += '<li id="all_105"><p class="module-title">Dementia</p></li>\n'
-    moduleListHtml += '<li id="all_106"><p class="module-title">Alzheimer\'s</p></li>\n'
-    moduleListHtml += '<li id="all_104" class="module-parent">\n'
-    moduleListHtml += '<p class="module-title module-parent-title">Respitory</p>\n'
-    moduleListHtml += '<ul class="module-children-list">\n'
-    moduleListHtml += '<li id="all_107"><p class="module-title">Asthma</p></li>\n'
-    moduleListHtml += '<li id="all_108"><p class="module-title">Ashtma 2</p></li>\n'
-    moduleListHtml += '<li id="all_109"><p class="module-title">Asthma 3</p></li>\n'
-    moduleListHtml += '<li id="all_110"><p class="module-title">Asthma 4</p></li>\n'
-    moduleListHtml += '</ul>\n'
-    moduleListHtml += '</li>\n'
-    moduleListHtml += '<li id="all_111"><p class="module-title">Stroke</p></li>\n'
-    $(".module-list")[0].innerHTML = moduleListHtml;
     
     prepareList();
 }
 
 function filterModules(filter) {
+    filter = filter.toLowerCase();
     var filteredModules = [];
-    for (i = 0; i < allModules.length; i++) {
-        if (allModules[i].title.search(filter) > -1) {
-            filteredModules.push(allModules[i]);   
+    for (var i = 0; i < allModules.length; i++) {
+        if (allModules[i].title.toLowerCase().search(filter) > -1) {
+            filteredModules.push(JSON.parse(JSON.stringify(allModules[i])));
         }
     }
-    console.log("filtered mods: ");
-    console.log(filteredModules);
     return filteredModules;
 }
 
 function writePatientModulesToHtml() {
     var moduleListHtml = '';
-    moduleListHtml += '<li id="patient_101"><p class="module-title module-title-with-btn">Dementia Overview</p><p class="module-title-btn" onclick="removeModuleForPatient(101)">X</p></li>\n';
-    moduleListHtml += '<li id="patient_102"><p class="module-title module-title-with-btn">Dementia Overview</p><p class="module-title-btn" onclick="removeModuleForPatient(102)">X</p></li>\n';
-    moduleListHtml += '<li id="patient_103"><p class="module-title module-title-with-btn">Dementia Overview</p><p class="module-title-btn" onclick="removeModuleForPatient(103)">X</p></li>\n';
-    moduleListHtml += '<li id="patient_104"><p class="module-title module-title-with-btn">Dementia Overview</p><p class="module-title-btn" onclick="removeModuleForPatient(104)">X</p></li>\n';
-    moduleListHtml += '<li id="patient_105"><p class="module-title module-title-with-btn">Dementia Overview</p><p class="module-title-btn" onclick="removeModuleForPatient(105)">X</p></li>\n';
+    for (var i = 0; i < patientModules.length; i++) {
+      moduleListHtml += '<li id="' + patientModules[i].id + '"><p class="module-title module-title-with-btn">';
+      moduleListHtml += patientModules[i].title + '</p><p class="module-title-btn" onclick="removeModuleForPatient(';
+      moduleListHtml += patientModules[i].id + ')">X</p></li>\n';  
+    }
+
     $(".module-list-patient")[0].innerHTML = moduleListHtml;
 }
 
@@ -119,9 +140,9 @@ function loginPatient() {
     }
     
     currentPatientId = patientId;
-    setPatientNameForId();
+    getPatientWithId();
     
-    loadPatientModulesFromServer();
+    loadPatientModulesFromAllModules();
     
     var patientIdElements = $("span#patient-id");
     for (i = 0; i < patientIdElements.length; i++) {
@@ -131,7 +152,7 @@ function loginPatient() {
     $(".module-select-container").show();
 }
 
-function setPatientNameForId() {
+function getPatientWithId() {
     $.ajax({
         url: 'http://deltahacks2.appspot.com/user/get/patient/' + currentPatientId,
         type: 'GET',
@@ -140,11 +161,10 @@ function setPatientNameForId() {
             console.log(data);
             
             var jsondata = JSON.parse(data);
-            var name = jsondata.patient_name;
+            currentPatient = jsondata;
             var patientNameElements = $("span#patient-name");
-            currentPatientName = name;
             for (i = 0; i < patientNameElements.length; i++) {
-                patientNameElements[i].innerHTML = currentPatientName;
+                patientNameElements[i].innerHTML = currentPatient.patient_name;
             }
         }
     });
@@ -172,12 +192,8 @@ function removeModuleForPatient(moduleId) {
     
     // delet local copy for performance
     for (var i = 0; i < patientModules.length; i++) {
-        if (patientModules[i].patient_id == currentPatientId) {
-            for (var j = 0; j < patientModules[i].modules.length; j++) {
-                if (parseInt(patientModules[i].modules[j]) == moduleId) {
-                    patientModules[i].modules.splice(j,1);
-                }
-            }
+        if (patientModules[i].id == moduleId) {
+                patientModules.splice(i,1);
         }
     }
     
@@ -198,7 +214,7 @@ function closeModalPopup() {
 
 function addNewModuleClicked() {
     $('.new-module-modal').show();
-    $("patient-name-input").value = currentPatientName;
+    $("patient-name-input").value = currentPatient.patient_name;
 }
 
 function addModuleFromForm() {
@@ -235,11 +251,12 @@ function addPreviewedModuleToPatient() {
     // add locally for performance
     for (var i = 0; i < allModules.length; i++) {
         if (allModules[i].id == previewedModuleId) {
-            patientModules.push(allModules[i]);
+            patientModules.push(JSON.parse(JSON.stringify(allModules[i]))); // clones object instead of fref
         }
     }
     console.log("Adding Module " + previewedModuleId + " to patient");
     
-    patientModules = getPatientModules();
     writePatientModulesToHtml();
 }
+
+
