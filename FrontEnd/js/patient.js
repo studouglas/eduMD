@@ -18,6 +18,9 @@ var previewedModuleId;
 ============================== */
 
 $(document).ready(function () {
+    console.log("DOC READY IN PATIENT PORTAL");
+    console.log("href: " + window.location.href);
+    
     loadAllPatientsFromServer();
     loadModulesFromServer();
     
