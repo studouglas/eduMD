@@ -53,15 +53,32 @@ function showModuleOverview(moduleId) {
 function loadModulesFromServer() {
     // get in ajax, on success write to DOM
     $.ajax({
-        url: 'http://deltahacks2.appspot.com/user/get/condition/5094432508477440',
+        url: 'http://deltahacks2.appspot.com/user/get/condition/all',
         type: 'GET',
         success: function (data) {
             console.log("RECEIVED ANSWER (loadModulesFromServer): ");
-            allModules.push(JSON.parse(data).condition);
-            console.log(allModules);
+            var jsonData = JSON.parse(data);
+            console.log(jsonData);
+            allModules = jsonData.conditions;
+            sortAllModules();
             writeModulesToHtml();
         }
     });
+}
+
+function sortAllModules() {
+    console.log("SORTING ALLMODULES:");
+    console.log(allModules);
+    allModules.sort(function(a,b) {
+        return a.title.localeCompare(b.title);
+    });
+    
+    var indexOfLastChild = 1;
+    for (var i = 1; i < allModules.length; i++) {    
+        if (allModules[i].parent_id == allModules[i].id)
+    }
+    console.log("DONE SORT:");
+    console.log(allModules);
 }
 
 function loadPatientModulesFromAllModules() {
@@ -218,17 +235,18 @@ function addNewModuleClicked() {
 }
 
 function addModuleFromForm() {
-    var isPrivate = $("#public-input")[0].checked; // boolean
-    var patientName = $("#patient-name-input")[0].value;
-    var category = $("#category-input")[0].value;
-    var title = $("#title-input")[0].value;
-    var content = $("#content-input")[0].value;
+//    var isPrivate = $("#public-input")[0].checked; // boolean
+//    var patientName = $("#patient-name-input")[0].value;
+//    var category = $("#category-input")[0].value;
+//    var title = $("#title-input")[0].value;
+//    var content = $("#content-input")[0].value;
     
-    console.log("PRIVATE: " + isPrivate);
-    console.log("PATIENT: " + patientName);
-    console.log("CATEGOR: " + category);
-    console.log("TITLE:   " + title);
-    console.log("CONTENT: " + content);
+    var moduleObj = new Object();
+    obj.data_type = "txt";
+    obj.title = $("#title-input")[0].value;
+    obj.content = $("#content-input")[0].value;
+    obj.shared = $("#public-input")[0].checked;
+    obj.parentId = $("#category-input")[0].value;
     
     allModules = getAllModules();
     writeModulesToHtml();
