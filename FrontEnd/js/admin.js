@@ -40,6 +40,7 @@ $(document).ready(function () {
 });
 
 function showModuleOverview(moduleId) {
+    $("#add-module-to-patient-btn").show();
     console.log("showOverview(" + moduleId + ")");
     for (var i = 0; i < allModules.length; i++) {
         if (allModules[i].id == moduleId) {
@@ -67,15 +68,28 @@ function loadModulesFromServer() {
 }
 
 function sortAllModules() {
-    console.log("SORTING ALLMODULES:");
-    console.log(allModules);
     allModules.sort(function(a,b) {
         return a.title.localeCompare(b.title);
     });
-    
-    var indexOfLastChild = 1;
-    for (var i = 1; i < allModules.length; i++) {    
-        if (allModules[i].parent_id == allModules[i].id)
+    for (var k = 0; k < 20; k++) {
+        for (var j = 0; j < allModules.length; j++) {
+            var indexOfLastChild = j + 1;
+            for (var m = indexOfLastChild; m < allModules.length-1; m++) {
+                if (allModules[m].parent_id == allModules[j].id) {
+                    indexOfLastChild++;
+                } else {
+                    break;
+                }
+            }
+            for (var i = indexOfLastChild; i < allModules.length; i++) {    
+                if (allModules[i].parent_id == allModules[j].id) {
+                    temp = allModules[i];
+                    allModules[i] = allModules[indexOfLastChild];
+                    allModules[indexOfLastChild] = temp;
+                    indexOfLastChild++;
+                }
+            }
+        }
     }
     console.log("DONE SORT:");
     console.log(allModules);
@@ -99,24 +113,37 @@ function writeModulesToHtml(filter) {
     var modulesToWrite = (filter == null || filter == '') ? allModules : filterModules(filter);
     
     var moduleListHtml = '';
-    for (i = 0; i < modulesToWrite.length; i++) {
+    var levelCounter = 0;
+    for (i = 0; i < modulesToWrite.length - 1; i++) {
         var id = modulesToWrite[i].id;
         var title = modulesToWrite[i].title;
-        moduleListHtml += '\n<li id="' + id + '"><p class="module-title">' + title + '</p></li>';
+        
+        // open new list
+        if (modulesToWrite[i+1].parent_id == modulesToWrite[i].id) {
+            moduleListHtml += '<li id="' + id + '" class="module-parent">\n';
+            moduleListHtml += '<p class="module-title module-parent-title">' + title + '</p>\n';
+            moduleListHtml += '<ul class="module-children-list">\n';
+            levelCounter++;
+        } 
+        // stay same
+        else if (modulesToWrite[i+1].parent_id == modulesToWrite[i].parent_id) {
+            moduleListHtml += '<li id="' + id + '"><p class="module-title">' + title + '</p></li>\n';
+        } 
+        // close list
+        else {
+            moduleListHtml += '<li id="' + id + '"><p class="module-title">' + title + '</p></li>\n';
+            moduleListHtml += '</ul></li>\n';
+            levelCounter--;
+        }
     }
-//    moduleListHtml += '<li id="all_104"><p class="module-title">Multiple Sclerosis</p></li>\n'
-//    moduleListHtml += '<li id="all_105"><p class="module-title">Dementia</p></li>\n'
-//    moduleListHtml += '<li id="all_106"><p class="module-title">Alzheimer\'s</p></li>\n'
-//    moduleListHtml += '<li id="all_104" class="module-parent">\n'
-//    moduleListHtml += '<p class="module-title module-parent-title">Respitory</p>\n'
-//    moduleListHtml += '<ul class="module-children-list">\n'
-//    moduleListHtml += '<li id="all_107"><p class="module-title">Asthma</p></li>\n'
-//    moduleListHtml += '<li id="all_108"><p class="module-title">Ashtma 2</p></li>\n'
-//    moduleListHtml += '<li id="all_109"><p class="module-title">Asthma 3</p></li>\n'
-//    moduleListHtml += '<li id="all_110"><p class="module-title">Asthma 4</p></li>\n'
-//    moduleListHtml += '</ul>\n'
-//    moduleListHtml += '</li>\n'
-//    moduleListHtml += '<li id="all_111"><p class="module-title">Stroke</p></li>\n'
+    var id = modulesToWrite[modulesToWrite.length - 1].id;
+    var title = modulesToWrite[modulesToWrite.length - 1].title;
+    if (levelCounter == 0) {
+        moduleListHtml += '<li id="' + id + '"><p class="module-title">' + title + '</p></li>\n';
+    } else {
+        moduleListHtml += '<li id="' + id + '"><p class="module-title">' + title + '</p></li>\n';
+        moduleListHtml += '</ul></li>\n'
+    }
     $(".module-list")[0].innerHTML = moduleListHtml;
     
     $(".module-list li").click(function () {
@@ -170,6 +197,7 @@ function loginPatient() {
 }
 
 function getPatientWithId() {
+    console.log("getting patient");
     $.ajax({
         url: 'http://deltahacks2.appspot.com/user/get/patient/' + currentPatientId,
         type: 'GET',
@@ -235,12 +263,6 @@ function addNewModuleClicked() {
 }
 
 function addModuleFromForm() {
-//    var isPrivate = $("#public-input")[0].checked; // boolean
-//    var patientName = $("#patient-name-input")[0].value;
-//    var category = $("#category-input")[0].value;
-//    var title = $("#title-input")[0].value;
-//    var content = $("#content-input")[0].value;
-    
     var moduleObj = new Object();
     obj.data_type = "txt";
     obj.title = $("#title-input")[0].value;
@@ -248,7 +270,6 @@ function addModuleFromForm() {
     obj.shared = $("#public-input")[0].checked;
     obj.parentId = $("#category-input")[0].value;
     
-    allModules = getAllModules();
     writeModulesToHtml();
     closeModalPopup();
 }
@@ -259,12 +280,36 @@ function addNewPatient() {
 
 function addNewPatientFromForm() {
     var name = $("#new-patient-name-input")[0].value;
-    console.log("Add Patient: <" + name + ">");
+    var id = $("#new-patient-id-input")[0].value;
+    $.ajax({
+        url: 'http://deltahacks2.appspot.com/user/add/patient',
+        type: 'POST',
+        data: {'patient_id':id,
+               'patient_name':name
+        },
+        success: function (data) {
+            console.log("Successfulyl added patient: " + name);
+        }
+    });
+    
     closeModalPopup();
 }
 
 function addPreviewedModuleToPatient() {
     // call api to add module to patient
+    var modules = [];
+    modules[0] = previewedModuleId;
+     $.ajax({
+        url: 'http://deltahacks2.appspot.com/user/edit/patient/' + currentPatientId,
+        type: 'POST',
+        data: {'modules': modules,
+               'patient_id':currentPatientId,
+               'patient_name':currentPatient.patient_name
+        },
+        success: function (data) {
+            console.log("Successfulyl added preview module ");
+        }
+    });
     
     // add locally for performance
     for (var i = 0; i < allModules.length; i++) {
