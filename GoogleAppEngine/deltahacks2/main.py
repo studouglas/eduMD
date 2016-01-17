@@ -138,10 +138,13 @@ class SignUpHandler(BaseHandler):
 	def post(self):
 		username = self.request.get('username')
 		password = self.request.get('password')
-
-		user_data = self.user_model.create_user(username, password_raw=password, verified=True)
+		
+		user_data = self.user_model.create_user(username, password_raw=password, verified=False)
 		if not user_data[0]:
-			logging
+			logging.info('Unable to creaete user for username: %s because of \duplicate keys %s', username, user_data[1])
+			return
+
+		self.redirect('/')
 
 class LogoutHandler(BaseHandler):
 	def get(self):
@@ -187,6 +190,23 @@ class AddConditionHandler(BaseHandler):
 		new_condition.put()
 		self.redirect(self.uri_for('user'))
 
+class EditConditionHandler(BaseHandler):
+	@user_required
+	def post(self, condition_id):
+		condition = Patient.query(parent=condition_key(DEFAULT_KEY)).filter('condition_id = ', condition_id)
+		condition.title = self.request.get('title')
+		condition.content = self.request.get('content')
+		if self.request.get('parent_id'):
+			new_condition.parent_id = int(self.request.get('parent_id'))
+		condition.shared = self.request.get('shared')
+		condition.put()
+
+class DeleteConditionHandler(BaseHandler):
+	@user_required
+	def get(self, condition_id):
+		patient = Patient.query(parent=patient_key(DEFAULT_KEY)).filter('patient_id = ', patient_id)
+		patient.key.delete()
+
 class PatientHandler(BaseHandler):
 	@user_required
 	def get(self, patient_id):
@@ -221,11 +241,26 @@ class AddPatientHandler(BaseHandler):
 	@user_required
 	def post(self):
 		new_patient = Patient(parent=patient_key(DEFAULT_KEY))
-		new_patient.patient_id = self.request.get('patient_id')
+		new_patient.patient_id = long(self.request.get('patient_id'))
 		new_patient.patient_name = self.request.get('patient_name')
 		new_patient.doctor_id = int(self.user_info['user_id'])
 		new_patient.put()
 		self.redirect(self.uri_for('user'))
+
+class EditPatientHandler(BaseHandler):
+	@user_required
+	def post(self, patient_id):
+		patient = Patient.query(parent=patient_key(DEFAULT_KEY)).filter('patient_id = ', patient_id)
+		patient_id = self.request.get('patient_id')
+		patient.patient_name = self.request.get('patient_name')
+		patient.modules = ndb.StringProperty('modules')
+		patient.put()
+
+class DeletePatientHandler(BaseHandler):
+	@user_required
+	def get(self, patient_id):
+		patient = Patient.query(parent=patient_key(DEFAULT_KEY)).filter('patient_id = ', patient_id)
+		patient.key.delete()
 
 class PatientDocumentHandler(BaseHandler):
 	def get(self, patient_id):
@@ -258,12 +293,12 @@ app = webapp2.WSGIApplication([
     webapp2.Route('/user/edit', EditHandler),
     webapp2.Route('/user/patient/<patient_id:\d+>', PatientHandler),
     
-    webapp2.Route('/user/add/patient', NewPatientHandler),
+    webapp2.Route('/user/add/patient', AddPatientHandler),
     webapp2.Route('/user/edit/patient/<patient_id:\d+>', EditPatientHandler),
     webapp2.Route('/user/delete/patient/<patient_id:\d+>', DeletePatientHandler),
     
     webapp2.Route('/user/condition/<condition_id:\d+>', GetConditionHandler),
-    webapp2.Route('/user/add/condition', NewConditionHandler),
+    webapp2.Route('/user/add/condition', AddConditionHandler),
     webapp2.Route('/user/edit/condition', EditConditionHandler),
     webapp2.Route('/user/delete/condition', DeleteConditionHandler),
     

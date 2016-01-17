@@ -1,8 +1,23 @@
-var currentPatientId;
-var currentPatientName;
+var currentPatientId = "22";
+var currentPatientName = "John Sno";
+var allModules; // array of below objects, parent is 
+var patientModules; // array of below objects
+
+/* JSON for Modules ==============
+{
+    "moduleId":"10",
+    "title":"Dealing with Anger",
+    "content":"<p>The steps to...</p>",
+    "parent_id":"40" or "",
+    "data_type":"",
+    "doctor_id":"20" or "",
+    "shared":"true" or "false"
+}
+============================== */
 
 $(document).ready(function () {
-    loadModuleListAndWriteToHtml();
+    allModules = getAllModules();
+    writeModulesToHtml();
     prepareList();
     
     $("#patient-id-input").bind('input', function () {            
@@ -20,46 +35,72 @@ $(document).ready(function () {
         }
     });
     
+    $(".search-modules").bind('input', function () {            
+        writeModulesToHtml($(this).val());
+    });
+    
     $(".module-list li").click(function () {
         console.log(this);
         showModuleOverview(this.id);
     });
 });
 
-function addNewPatient() {
-    
-}
-
 function showModuleOverview(moduleId) {
     $(".module-preview-title")[0].innerHTML = "MODULE: " + moduleId;
     $(".module-preview-content")[0].innerHTML = "<p>CONTENT HERE</p>";
 }
 
-function loadModuleListAndWriteToHtml() {
+function getAllModules() {
+    return [];
+}
+
+function getPatientModules() {
+    return [];
+}
+
+function writeModulesToHtml(filter) {
+    var modulesToWrite = (filter == '') ? allModules : filterModules(filter);
+    
     var moduleListHtml = '';
-    moduleListHtml += '<li id="104"><p class="module-title">Multiple Sclerosis</p></li>\n'
-    moduleListHtml += '<li id="105"><p class="module-title">Dementia</p></li>\n'
-    moduleListHtml += '<li id="106"><p class="module-title">Alzheimer\'s</p></li>\n'
-    moduleListHtml += '<li id="104">\n'
+//    for (i = 0; i < modulesToWrite.length; i++) {
+//        var id = modulesToWrite[i].module_id;
+//        var title = modulesToWrite[i].title;
+//        moduleListHtml += '\n<li id="all_' + id + '"><p class="module-title">' + title + '</p></li>';
+//    }
+    moduleListHtml += '<li id="all_104"><p class="module-title">Multiple Sclerosis</p></li>\n'
+    moduleListHtml += '<li id="all_105"><p class="module-title">Dementia</p></li>\n'
+    moduleListHtml += '<li id="all_106"><p class="module-title">Alzheimer\'s</p></li>\n'
+    moduleListHtml += '<li id="all_104">\n'
     moduleListHtml += '<p class="module-title module-parent-title">Respitory</p>\n'
     moduleListHtml += '<ul class="module-children-list">\n'
-    moduleListHtml += '<li id="107"><p class="module-title">Asthma</p></li>\n'
-    moduleListHtml += '<li id="108"><p class="module-title">Ashtma 2</p></li>\n'
-    moduleListHtml += '<li id="109"><p class="module-title">Asthma 3</p></li>\n'
-    moduleListHtml += '<li id="110"><p class="module-title">Asthma 4</p></li>\n'
+    moduleListHtml += '<li id="all_107"><p class="module-title">Asthma</p></li>\n'
+    moduleListHtml += '<li id="all_108"><p class="module-title">Ashtma 2</p></li>\n'
+    moduleListHtml += '<li id="all_109"><p class="module-title">Asthma 3</p></li>\n'
+    moduleListHtml += '<li id="all_110"><p class="module-title">Asthma 4</p></li>\n'
     moduleListHtml += '</ul>\n'
     moduleListHtml += '</li>\n'
-    moduleListHtml += '<li id="111"><p class="module-title">Stroke</p></li>\n'
+    moduleListHtml += '<li id="all_111"><p class="module-title">Stroke</p></li>\n'
     $(".module-list")[0].innerHTML = moduleListHtml;
 }
 
-function loadPatientModulesAndWriteToHtml() {
+function filterModules(filter) {
+    var filteredModules = [];
+    for (i = 0; i < allModules.length; i++) {
+        if (allModules[i].title.search(filter) > -1) {
+            filteredModules.push(allModules[i]);   
+        }
+    }
+    console.log(filteredModules);
+    return filteredModules;
+}
+
+function writePatientModulesToHtml() {
     var moduleListHtml = '';
-    moduleListHtml += '<li><p class="module-title module-title-with-btn">Dementia Overview</p><p class="module-title-btn">X</p></li>\n';
-    moduleListHtml += '<li><p class="module-title module-title-with-btn">Dementia Overview</p><p class="module-title-btn">X</p></li>\n';
-    moduleListHtml += '<li><p class="module-title module-title-with-btn">Dementia Overview</p><p class="module-title-btn">X</p></li>\n';
-    moduleListHtml += '<li><p class="module-title module-title-with-btn">Dementia Overview</p><p class="module-title-btn">X</p></li>\n';
-    moduleListHtml += '<li><p class="module-title module-title-with-btn">Dementia Overview</p><p class="module-title-btn">X</p></li>\n';
+    moduleListHtml += '<li id="patient_101"><p class="module-title module-title-with-btn">Dementia Overview</p><p class="module-title-btn" onclick="removeModuleForPatient(101)">X</p></li>\n';
+    moduleListHtml += '<li id="patient_102"><p class="module-title module-title-with-btn">Dementia Overview</p><p class="module-title-btn" onclick="removeModuleForPatient(102)">X</p></li>\n';
+    moduleListHtml += '<li id="patient_103"><p class="module-title module-title-with-btn">Dementia Overview</p><p class="module-title-btn" onclick="removeModuleForPatient(103)">X</p></li>\n';
+    moduleListHtml += '<li id="patient_104"><p class="module-title module-title-with-btn">Dementia Overview</p><p class="module-title-btn" onclick="removeModuleForPatient(104)">X</p></li>\n';
+    moduleListHtml += '<li id="patient_105"><p class="module-title module-title-with-btn">Dementia Overview</p><p class="module-title-btn" onclick="removeModuleForPatient(105)">X</p></li>\n';
     $(".module-list-patient")[0].innerHTML = moduleListHtml;
 }
 
@@ -72,22 +113,32 @@ function loginPatient() {
     currentPatientId = patientId;
     currentPatientName = getPatientNameForId(patientId);
     
-    loadPatientModulesAndWriteToHtml();
+    patientModules = getPatientModules();
+    writePatientModulesToHtml();
     
+    var patientNameElements = $("span#patient-name");
+    for (i = 0; i < patientNameElements.length; i++) {
+        patientNameElements[i].innerHTML = currentPatientName;
+    }
+    var patientIdElements = $("span#patient-id");
+    for (i = 0; i < patientIdElements.length; i++) {
+        patientIdElements[i].innerHTML = currentPatientId;
+    }
     $(".login-container").hide();
     $(".module-select-container").show();
 }
 
 function getPatientNameForId(patientId) {
-    var name = 'John Smith';
-//    $.ajax({
-//        url: '',
-//        type: 'GET';
-//        success: function () {
-//            console.log("RECEIVED ANSWER");
-//            name = "answer";
-//        }
-//    });
+    var name = 'John Snow';
+    $.ajax({
+        url: 'http://deltahacks2.appspot.com/user/get/patient/' + patientId,
+        type: 'GET',
+        success: function (data) {
+            console.log("RECEIVED ANSWER");
+            console.log(data);
+            name = "answer";
+        }
+    });
     return name;
 } 
 
@@ -116,20 +167,54 @@ function switchPatientsClicked() {
     window.location.href = "adminpatient.html";
 }
 
-function removeModuleForPatient(patientId, moduleId) {
+function removeModuleForPatient(moduleId) {
     // call api to remove module
     
-    loadPatientModulesAndWriteToHtml();
+    patientModules = getPatientModules();
+    writePatientModulesToHtml();
+    
+    console.log("Remove module: " + moduleId + " for patient: " + currentPatientId);
 }
 
 function closeModalPopup() {
     $('.fullscreen-modal-container').hide();
+    $('.new-module-modal').hide();
+    $('.new-patient-modal').hide();
+    $("#new-patient-name-input")[0].value = '';
+    $("#public-input")[0].checked = true;
+    $("#patient-name-input")[0].value = '';
+    $("#category-input")[0].value = '';
+    $("#title-input")[0].value = '';
+    $("#content-input")[0].value = '';
 }
 
-var categories = ["ActionScript","AppleScript","Asp","BASIC","C","Perl","PHP","Python","Ruby","Scala","Scheme"];
 function addNewModuleClicked() {
-    $('.fullscreen-modal-container').show();
-    $("#category-input").autocomplete({
-       source: categories 
-    });
+    $('.new-module-modal').show();
+    $("patient-name-input").value = currentPatientName;
+}
+
+function addModuleFromForm() {
+    var isPrivate = $("#public-input")[0].checked; //boolean
+    var patientName = $("#patient-name-input")[0].value;
+    var category = $("#category-input")[0].value;
+    var title = $("#title-input")[0].value;
+    var content = $("#content-input")[0].value;
+    
+    console.log("PRIVATE: " + isPrivate);
+    console.log("PATIENT: " + patientName);
+    console.log("CATEGOR: " + category);
+    console.log("TITLE:   " + title);
+    console.log("CONTENT: " + content);
+    
+    closeModalPopup();
+}
+
+function addNewPatient() {
+    $(".new-patient-modal").show();
+}
+
+function addNewPatientFromForm() {
+    var name = $("#new-patient-name-input")[0].value;
+    console.log("Add Patient: <" + name + ">");
+    closeModalPopup();
 }

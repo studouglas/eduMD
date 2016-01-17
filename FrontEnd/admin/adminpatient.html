@@ -19,6 +19,7 @@
                 <a href="adminpatient.html"><li class="current-page">Patient</li></a>
             </ul>
         </header>
+        
         <div class="center-container login-container">
             <h1 class="input-label">Enter Patient ID:</h1>
             <input class="text-input" id="patient-id-input" type="text" placeholder="Patient ID" />
@@ -27,15 +28,36 @@
                 <a onclick="addNewPatient()" class="ghost-button" id="add-patient-btn">Add New Patient</a>
                 <a onclick="loginPatient()" class="ghost-button highlighted-button disabled-button" id="login-button">Go</a>
             </div>
+            
+            <div class="fullscreen-modal-container new-patient-modal">
+            <div class="fullscreen-modal" id="add-new-patient-modal">
+                <div class="fullscreen-modal-fixed-header">
+                    <h3 class="fullscreen-modal-title">Add New Patient</h3>
+                    <a onclick=closeModalPopup()><img class="fullscreen-modal-close-button" src="../img/icon_close.svg"></a>
+                </div>
+
+                <div class="fullscreen-modal-content">
+                    <form>
+                        <p>Patient Name:</p>
+                        <input class="input" type="text" id="new-patient-name-input" />
+                    </form>
+                    <div class="button-container-center">
+                        <a class="ghost-button" onclick="closeModalPopup()">Cancel</a>
+                        <a class="ghost-button highlighted-button" onclick="addNewPatientFromForm()">Add Patient</a>
+                    </div>
+                </div>
+            </div>
+        </div>
         </div>
 
         <div class="module-select-container" style="display: none;"> 
             <div class="patient-header">
-                <p class="patient-name">Patient #<span id="patient-number">10</span>: <strong><span id="patient-name">John Smith</span></strong></p>
+                <p class="patient-name">Patient #<span id="patient-id">0</span>: <strong><span id="patient-name">Test Name</span></strong></p>
                 <button class="switch-patients-btn" onclick="switchPatientsClicked()">Switch Patients</button>
             </div>
 
             <div class="module-list-container">
+                <h1 class="module-preview-title">All Modules</h1>
                 <input type="text" placeholder="Filter Modules" class="search-modules"/>
                 <button class="add-new-module-btn" onclick="addNewModuleClicked()">Add New Module</button>
 
@@ -58,17 +80,20 @@
                     venenatis. Nam magna enim, accumsan eu, blandit sed, blandit a, 
                     eros.</p>
                 </div>
+                <div class="button-container-center">
+                    <a class="ghost-button highlighted-button">Add to Patient's Modules</a>
+                </div>
             </div>
 
             <div class="patient-modules-container">
-                <h1>Current Modules for <span id="patient-name-label"></span></h1>
+                <h1 class="module-preview-title"><span class="test" id="patient-name"></span>'s Modules</h1>
                 <ul class="module-list-patient">
                 </ul>
             </div>
             
             <div style="clear: both;"></div>
             
-        <div class="fullscreen-modal-container">
+        <div class="fullscreen-modal-container new-module-modal">
             <div class="fullscreen-modal" id="add-new-module-modal">
                 <div class="fullscreen-modal-fixed-header">
                     <h3 class="fullscreen-modal-title">Add New Module</h3>
