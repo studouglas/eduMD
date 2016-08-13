@@ -1,8 +1,8 @@
 var currentPatientId;
 var currentPatient;
 var allPatients = [];
-var allModules = [];     // array of below objects, parent is 
-var patientModules = []; // array of below objects
+var allModules = [];
+var patientModules = [];
 var previewedModuleId;
 
 /* JSON for Modules ==============
@@ -25,13 +25,8 @@ $(document).ready(function () {
     if (paramIndex > -1) {
         currentPatientId = window.location.href.substring(paramIndex + "?patiendId=".length, window.location.href.length);    
     } else {
-        console.log("NO PATIENT FOUND UH OU");
+        console.log("NO PATIENT FOUND UH OH");
     }
-    
-    
-    
-    
-    
     
     $(".search-modules").bind('input', function () {            
         writeModulesToHtml($(this).val());
@@ -66,21 +61,16 @@ function loadAllPatientsFromServer() {
 
 // DONE
 function loadModulesFromServer() {
-    // get in ajax, on success write to DOM
     $.ajax({
         url: 'http://deltahacks2.appspot.com/user/get/condition/all',
         type: 'GET',
         success: function (data) {
-            console.log("RECEIVED ANSWER (loadModulesFromServer): ");
             var jsonData = JSON.parse(data);
-            console.log(jsonData);
             allModules = jsonData.conditions;
             sortAllModules();
             writeModulesToHtml();
             
             currentPatient = getPatientWithId(currentPatientId);
-            console.log('currentPatient');
-            console.log(currentPatient);
 
             var patientIdElements = $("span#patient-id");
             for (i = 0; i < patientIdElements.length; i++) {
@@ -199,18 +189,6 @@ function filterModules(filter) {
 }
 
 // DONE
-function writePatientModulesToHtml() {
-//    var moduleListHtml = '';
-//    for (var i = 0; i < patientModules.length; i++) {
-//      moduleListHtml += '<li id="' + patientModules[i].id + '"><p class="module-title module-title-with-btn">';
-//      moduleListHtml += patientModules[i].title + '</p><p class="module-title-btn" onclick="removeModuleForPatient(';
-//      moduleListHtml += patientModules[i].id + ')">X</p></li>\n';  
-//    }
-//
-//    $(".module-list-patient")[0].innerHTML = moduleListHtml;
-}
-
-// DONE
 function loginPatient() {
     var patientId = $("#patient-id-input")[0].value;
     if (patientId == '' || isNaN(patientId)) {
@@ -303,8 +281,6 @@ function closeModalPopup() {
     $("#new-patient-name-input")[0].value = '';
     $("#public-input")[0].checked = true;
     $("#patient-name-input")[0].value = '';
-//    $("#title-input")[0].value = '';
-//    $("#content-input")[0].value = '';
 }
 
 // DONE
@@ -391,8 +367,7 @@ function addPreviewedModuleToPatient() {
     writePatientModulesToHtml();
 }
 
-//TODO
-//Mailto function
+// DONE
 function generateMailto() {
     var subject = 'Dr. Watson has shared health educational materials with';
     var patient_link = 'http://www.deltahacks2.appspot.com/patient/' + currentPatientId;
